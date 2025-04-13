@@ -153,7 +153,6 @@ const Page = () => {
                             </div>
                         </div>
                     </div>
-
                     <input type="radio" id="person-tab" name="my_tabs_2" className="hidden peer/person" />
                     <label htmlFor="person-tab" className="tab flex items-center gap-2 cursor-pointer">
                         <FaUsers size={20} /> BUSINESS PERSON
