@@ -28,7 +28,7 @@ export async function createSession(username: string, roles: string) {
   const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000)
   const session = await encrypt({ username, roles, expiresAt })
 
-  cookies().set('session', session, {
+  cookies().set('distcraft_session', session, {
     httpOnly: true,
     secure: false,
     expires: expiresAt,
@@ -39,7 +39,7 @@ export async function createSession(username: string, roles: string) {
 
 
 export async function updateSession() {
-  const session = cookies().get('session')?.value
+  const session = cookies().get('distcraft_session')?.value
   const payload = await decrypt(session)
 
   if (!session || !payload) {
@@ -47,7 +47,7 @@ export async function updateSession() {
   }
 
   const expires = new Date(Date.now() + 12 * 60 * 60 * 1000)
-  cookies().set('session', session, {
+  cookies().set('distcraft_session', session, {
     httpOnly: true,
     secure: false,
     expires: expires,
@@ -58,7 +58,7 @@ export async function updateSession() {
 
 
 export async function deleteSession() {
-  cookies().delete('session')
+  cookies().delete('distcraft_session')
   redirect("/")
 }
 
