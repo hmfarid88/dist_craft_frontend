@@ -397,12 +397,12 @@ const Page: React.FC = () => {
             <label className="input input-bordered flex items-center gap-2">
               <HiOutlineReceiptTax size={20} />
               <span className="text-sm">VAT</span>
-              <input type="number" className="grow w-[150px]" value={vatAmount.toFixed(2)} readOnly placeholder="Vat" />
+              <p>{Number((vatAmount).toFixed(2)).toLocaleString('en-IN')}</p>
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <div className="text-lg">{currency}</div>
               <span className="text-sm">TOTAL</span>
-              <input type="number" className="grow w-[150px]" value={(total + vatAmount).toFixed(2)} readOnly placeholder="Total" />
+              <p>{Number((total + vatAmount).toFixed(2)).toLocaleString('en-IN')}</p>
             </label>
             {/* <label className="input input-bordered flex items-center gap-2">
               <FaCcMastercard size={20} />
@@ -443,8 +443,9 @@ const Page: React.FC = () => {
         </div> */}
         <div className="flex w-full justify-center p-2">
           <div className="card items-center justify-center gap-3 p-2">
-            <h1 className="tracking-widest font-bold">SUBMIT</h1>
-            <button onClick={handleFinalSubmit} disabled={pending} className="btn btn-success btn-circle font-bold">{pending ? <span className="loading loading-ring loading-md text-accent"></span> : <MdOutlineNavigateNext size={36} />}</button>
+            <label className="font-bold">SUBMIT</label>
+            <button onClick={handleFinalSubmit} disabled={pending} className="btn btn-success btn-circle btn-lg btn-outline font-bold">{pending ? <span className="loading loading-ring loading-md text-accent"></span> : <MdOutlineNavigateNext size={40} />}</button>
+
           </div>
         </div>
       </div>

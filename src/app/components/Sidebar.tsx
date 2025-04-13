@@ -42,6 +42,7 @@ export const Sidebar = () => {
                         <details>
                             <summary><HiOutlineShoppingBag size={20} />PRODUCT SALE</summary>
                             <ul>
+                                {/* <li><Link href="/order-place">PLACE ORDER</Link></li> */}
                                 <li><Link href="/sale">RETAILER SALE</Link></li>
                                 <li><Link href="/vendor-sale">VENDOR SALE</Link></li>
                             </ul>
