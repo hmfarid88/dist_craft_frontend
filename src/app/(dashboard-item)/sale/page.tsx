@@ -444,7 +444,7 @@ const Page: React.FC = () => {
         <div className="flex w-full justify-center p-2">
           <div className="card items-center justify-center gap-3 p-2">
             <label className="font-bold">SUBMIT</label>
-            <button onClick={handleFinalSubmit} disabled={pending} className="btn btn-success btn-circle btn-lg btn-outline font-bold">{pending ? <span className="loading loading-ring loading-md text-accent"></span> : <MdOutlineNavigateNext size={40} />}</button>
+            <button onClick={handleFinalSubmit} disabled={pending} className="btn btn-success btn-circle btn-outline font-bold">{pending ? <span className="loading loading-ring loading-md text-accent"></span> : <MdOutlineNavigateNext size={40} />}</button>
 
           </div>
         </div>
