@@ -133,13 +133,13 @@ const Page = () => {
         setIsAuthorized(access === "granted");
     }, [access]);
 
-    if (!isAuthorized) {
-        return (
-            <div className="flex items-center justify-center min-h-[calc(100vh-228px)]">
-                <p className='text-red-500 uppercase font-semibold'>Unauthorized access !!!</p>
-            </div>
-        )
-    }
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex items-center justify-center min-h-[calc(100vh-228px)]">
+    //             <p className='text-red-500 uppercase font-semibold'>Unauthorized access !!!</p>
+    //         </div>
+    //     )
+    // }
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
             <div className="flex justify-between pl-5 pr-5 pt-5">

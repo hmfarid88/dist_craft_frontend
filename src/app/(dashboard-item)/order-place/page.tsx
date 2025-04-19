@@ -11,6 +11,7 @@ import { useReactToPrint } from "react-to-print";
 import { IoLocationOutline } from "react-icons/io5";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { AiOutlineMail } from "react-icons/ai";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 const Page: React.FC = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -207,7 +208,9 @@ const Page: React.FC = () => {
                         <div className="flex pt-2 justify-between pb-0">
                             <input type="date" name="date" onChange={(e: any) => setDate(e.target.value)} max={maxDate} value={date} className="input input-ghost" />
                             {saleProducts[0]?.srname && (<div className="flex gap-10"> <button onClick={() => { const confirmed = window.confirm("Are you sure to delete all products?"); if (confirmed) { dispatch(deleteAllProducts(username)); } }} className="flex btn btn-ghost btn-square"><FcDeleteDatabase size={36} /></button>
-                            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button> </div>)}
+                            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button> 
+                            <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />
+                            </div>)}
                             <div className="avatar-group -space-x-6 rtl:space-x-reverse pr-5">
                                 <div className="avatar placeholder">
                                     <div className="bg-neutral text-neutral-content w-12">
@@ -223,27 +226,27 @@ const Page: React.FC = () => {
 
                         <div className="flex flex-col md:flex-row gap-3 items-center justify-center">
                             <div className="flex gap-2">
-                                <div className="flex flex-col gap-2">
+                                <div className="flex w-full max-w-xs flex-col gap-2">
                                     <label className="font-bold text-sm">SR NAME</label>
-                                    <Select className="text-black h-[38px] w-32 z-10" onChange={handleSrChange} options={srNameOption} />
+                                    <Select className="text-black w-full h-[38px] z-10" onChange={handleSrChange} options={srNameOption} />
                                 </div>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col w-full max-w-xs gap-2">
                                     <label className="font-bold text-sm">RETAILER NAME</label>
-                                    <Select className="text-black h-[38px] w-32 z-10" onChange={(selectedOption: any) => setRetailer(selectedOption.value)} options={retailerOption} />
+                                    <Select className="text-black h-[38px] w-full z-10" onChange={(selectedOption: any) => setRetailer(selectedOption.value)} options={retailerOption} />
                                 </div>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col w-full max-w-xs gap-2">
                                     <label className="font-bold text-sm">PRODUCT NAME</label>
-                                    <Select className="text-black w-32 z-10" onChange={handleProductChange} options={productOption} />
+                                    <Select className="text-black w-full z-10" onChange={handleProductChange} options={productOption} />
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col w-full max-w-xs gap-2">
                                     <label className="font-bold text-sm">COLOR NAME</label>
-                                    <Select className="text-black w-32 z-10" name="pcolor" onChange={(selectedOption: any) => setColor(selectedOption.value)} options={colorOption} />
+                                    <Select className="text-black w-full z-10" name="pcolor" onChange={(selectedOption: any) => setColor(selectedOption.value)} options={colorOption} />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">QTY</label>
-                                    <input type="number" onChange={(e: any) => setQty(e.target.value)} className="input input-sm bg-white text-black h-[38px] w-20 z-10" />
+                                    <input type="number" onChange={(e: any) => setQty(e.target.value)} className="input input-sm input-bordered bg-white text-black h-[38px] w-20 z-10" />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">ADD</label>
@@ -384,7 +387,7 @@ const Page: React.FC = () => {
 
                             </div>
                         </div>
-                    </div>) : <div className="flex w-full items-center justify-center"><p>No invoice available</p></div>}
+                    </div>) : <div className="flex w-full items-center justify-center"><p>No order available</p></div>}
             </div>
             <ToastContainer autoClose={1000} theme="dark" />
         </div>

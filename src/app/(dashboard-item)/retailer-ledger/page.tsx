@@ -13,6 +13,7 @@ type Product = {
   retailerName: string;
   area: string;
   todayProductValue: number;
+  todayPreviousPayment: number;
   totalProductValue: number;
   currentPaymentTotal: number;
   previousPaymentTotal: number;
@@ -75,11 +76,14 @@ const Page = () => {
   const currentPayment = filteredProducts.reduce((total, product) => {
     return total + product.currentPaymentTotal;
   }, 0);
+  const todayPreviousPayment = filteredProducts.reduce((total, product) => {
+    return total + product.todayPreviousPayment;
+  }, 0);
   const totalPayment = filteredProducts.reduce((total, product) => {
     return total + product.previousPaymentTotal;
   }, 0);
   const totalBalance = filteredProducts.reduce((total, product) => {
-    return total + product.totalProductValue - product.previousPaymentTotal - product.currentPaymentTotal;
+    return total + product.totalProductValue - product.previousPaymentTotal - product.currentPaymentTotal- product.todayPreviousPayment;
   }, 0);
 
   return (
@@ -125,13 +129,13 @@ const Page = () => {
                       <td>{index + 1}</td>
                       <td className="uppercase">{product?.retailerName}</td>
                       <td className="uppercase">{product?.area}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.previousPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.totalProductValue - product?.todayProductValue-product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(product?.todayPreviousPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.totalProductValue - product?.todayProductValue -product?.previousPaymentTotal - product?.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal - product.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td><button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info"><CgDetailsMore size={18} /></button></td>
 
                     </tr>
@@ -141,9 +145,9 @@ const Page = () => {
                   <tr className="font-semibold text-lg">
                     <td colSpan={2}></td>
                     <td>TOTAL</td>
-                    <td>{(totalValue - currentValue).toLocaleString('en-IN')}</td>
-                    <td>{totalPayment.toLocaleString('en-IN')}</td>
-                    <td>{(totalValue - currentValue - totalPayment).toLocaleString('en-IN')}</td>
+                    <td>{(totalValue - totalPayment).toLocaleString('en-IN')}</td>
+                    <td>{todayPreviousPayment.toLocaleString('en-IN')}</td>
+                    <td>{(totalValue - totalPayment - todayPreviousPayment).toLocaleString('en-IN')}</td>
                     <td>{currentValue.toLocaleString('en-IN')}</td>
                     <td>{currentPayment.toLocaleString('en-IN')}</td>
                     <td>{(currentValue - currentPayment).toLocaleString('en-IN')}</td>
