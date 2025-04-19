@@ -6,9 +6,10 @@ import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
 import { CgDetailsMore } from "react-icons/cg";
 import { useRouter } from "next/navigation";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 type Product = {
-   
+
     supplierName: string;
     totalProductValue: number;
     totalSoldValue: number;
@@ -57,8 +58,8 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-    
-  
+
+
     const totalBalance = filteredProducts.reduce((total, product) => {
         return total + product.balance;
     }, 0);
@@ -75,13 +76,16 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
-                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    <div className="flex">
+                        <ExcelExportButton tableRef={contentToPrint} fileName="supplier_report" />
+                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    </div>
                 </div>
                 <div className="overflow-x-auto items-center justify-center">
                     <div ref={contentToPrint} className="flex-1 p-5">
                         <div className="flex flex-col items-center pb-5"><h4 className="font-bold">SUPPLIER LEDGER</h4><CurrentDate /></div>
                         <table className="table table-sm">
-                            <thead>
+                            <thead className="sticky top-16 bg-base-100">
                                 <tr>
                                     <th>SN</th>
                                     <th>SUPPLIER NAME</th>

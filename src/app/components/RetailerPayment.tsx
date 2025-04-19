@@ -91,7 +91,7 @@ const RetailerPayment = () => {
         <div className="label">
           <span className="label-text-alt">PAYMENT TYPE</span>
         </div>
-        <select className='select select-bordered' onChange={(e: any) => { setPaymentType(e.target.value) }}>
+        <select className='select select-bordered bg-white text-black' onChange={(e: any) => { setPaymentType(e.target.value) }}>
           <option selected disabled>Select . . .</option>
           <option value="current">CURRENT</option>
           <option value="previous">PREVIOUS</option>

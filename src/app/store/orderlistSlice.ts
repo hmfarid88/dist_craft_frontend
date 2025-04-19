@@ -5,12 +5,11 @@ import swal from 'sweetalert';
 interface Product {
     id: string;
     date: string;
-    proId: string;
-    brand: string;
-    color: string;
+    retailer: string;
     productName: string;
-    productno: string;
+    color: string;
     sprice: number;
+    qty: number;
     srname: string;
     area: string;
     username: string;
@@ -29,9 +28,9 @@ export const orderListSlice = createSlice({
     reducers: {
 
         addProducts: (state, action: PayloadAction<Product>) => {
-            const exist = state.products.find((pro) => pro.username === action.payload.username && pro.productno === action.payload.productno)
+            const exist = state.products.find((pro) => pro.username === action.payload.username && pro.retailer=== action.payload.retailer && pro.productName === action.payload.productName && pro.color===action.payload.color)
             if (exist) {
-                swal("Oops!", "This Product is already exist!", "error");
+                exist.qty = Number(exist.qty) + Number(action.payload.qty);
             } else {
                 state.products.push(action.payload);
             }
@@ -63,8 +62,9 @@ export const orderListSlice = createSlice({
 })
 export const selectTotalQuantity = createSelector(
     (state: { orderlist: orderListState }) => state.orderlist.products,
-    (products) => products.reduce((total, product) => total + 1, 0)
+    (products) => products.reduce((total, product) =>Number (total) + Number(product.qty), 0)
 );
+
 
 export const { addProducts, deleteProduct, deleteAllProducts, updateAllSrAndArea } = orderListSlice.actions;
 

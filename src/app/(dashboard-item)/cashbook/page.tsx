@@ -1,4 +1,5 @@
 "use client"
+import ExcelExportButton from '@/app/components/ExcellGeneration';
 import { useAppSelector } from '@/app/store';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
@@ -82,10 +83,11 @@ const Page = () => {
 
   return (
     <div className='container min-h-screen'>
-      <div className="flex justify-between pl-5 pr-5">
+      <div className="flex gap-2 pl-5 pr-5">
+        <ExcelExportButton tableRef={contentToPrint} fileName='cash_book' />
         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
       </div>
-      <div className="w-full card  border">
+      <div className="w-full">
         <div ref={contentToPrint} className="flex flex-col w-full items-center justify-center pt-5 pb-5">
           <div className="flex flex-col items-center justify-center">
             <h4 className='font-bold'>CASH BOOK</h4>
@@ -99,7 +101,7 @@ const Page = () => {
             <div className="flex w-full gap-10">
               <div className="flex">
                 <table className="table table-sm">
-                  <thead>
+                <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>DATE</th>
                       <th>DESCRIPTION</th>
@@ -145,7 +147,7 @@ const Page = () => {
               </div>
               <div>
                 <table className="table table-sm">
-                  <thead>
+                <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>DATE</th>
                       <th>DESCRIPTION</th>

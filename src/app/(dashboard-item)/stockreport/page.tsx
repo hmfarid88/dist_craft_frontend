@@ -7,13 +7,18 @@ import { FcAutomatic } from "react-icons/fc";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 interface Product {
   category: string;
   brand: string;
   productName: string;
+  color: string;
+  pprice: number;
+  sprice: number;
   countBeforeToday: number;
   countToday: number;
+  saleToday: number;
 }
 interface Updateable {
   supplier: string;
@@ -138,7 +143,7 @@ const Page = () => {
 
   useEffect(() => {
     const searchWords = filterCriteria.toLowerCase().split(" ");
-  
+
     const filtered = allProducts.filter(product =>
       searchWords.every(word =>
         (product.category?.toLowerCase().includes(word) || '') ||
@@ -146,10 +151,10 @@ const Page = () => {
         (product.productName?.toLowerCase().includes(word) || '')
       )
     );
-  
+
     setFilteredProducts(filtered);
   }, [filterCriteria, allProducts]);
-  
+
 
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
@@ -159,8 +164,21 @@ const Page = () => {
     return total + product.countBeforeToday;
   }, 0);
 
-  const totalQty = filteredProducts.reduce((total, product) => {
+  const totalTodayQty = filteredProducts.reduce((total, product) => {
     return total + product.countToday;
+  }, 0);
+
+  const totalSaleQty = filteredProducts.reduce((total, product) => {
+    return total + product.saleToday;
+  }, 0);
+  const totalPprice = filteredProducts.reduce((total, product) => {
+    return total + product.pprice;
+  }, 0);
+  const totalPpriceAmount = filteredProducts.reduce((total, product) => {
+    return total + (((product.countBeforeToday + product.countToday) - product.saleToday) * product.pprice);
+  }, 0);
+  const totalSpriceAmount = filteredProducts.reduce((total, product) => {
+    return total + (((product.countBeforeToday + product.countToday) - product.saleToday) * product.sprice);
   }, 0);
 
   return (
@@ -173,7 +191,10 @@ const Page = () => {
             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
           </svg>
         </label>
+        <div className="flex gap-3">
+          <ExcelExportButton tableRef={contentToPrint} fileName="stock_summary" />
         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+        </div>
       </div>
 
       <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
@@ -181,15 +202,22 @@ const Page = () => {
         <h4 className="pb-5"><CurrentDate /></h4>
         <div className="flex items-center justify-center">
           <table className="table table-sm">
-            <thead>
+          <thead className="sticky top-16 bg-base-100">
               <tr>
                 <th>SN</th>
                 <th>CATEGORY</th>
                 <th>BRAND</th>
                 <th>PRODUCT</th>
-                <th>PREVIOUS</th>
-                <th>TODAY</th>
-                <th>PRESENT</th>
+                <th>COLOR</th>
+                <th>STOCK</th>
+                <th>LIFTING</th>
+                <th>TOTAL STOCK</th>
+                <th>SALE</th>
+                <th>TOTAL STOCK</th>
+                <th>RP RATE</th>
+                <th>RP AMOUNT</th>
+                <th>DP RATE</th>
+                <th>DP AMOUNT</th>
               </tr>
             </thead>
             <tbody>
@@ -199,21 +227,33 @@ const Page = () => {
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
                   <td>{product.productName}</td>
+                  <td>{product.color}</td>
                   <td>{product.countBeforeToday}</td>
                   <td>{product.countToday}</td>
-                  <td className={product.countBeforeToday + product.countToday < 3 ? "text-red-500 font-bold" : ""}>
-                    {product.countBeforeToday + product.countToday}
-                  </td>
+                  <td>{product.countBeforeToday + product.countToday}</td>
+                  <td>{product.saleToday}</td>
+                  <td>{(product.countBeforeToday + product.countToday) - product.saleToday}</td>
+                  <td>{Number((product.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                  <td>{Number((((product.countBeforeToday + product.countToday) - product.saleToday) * product.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                  <td>{Number((product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                  <td>{Number((((product.countBeforeToday + product.countToday) - product.saleToday) * product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr className="font-bold text-sm">
-                <td colSpan={3}></td>
+                <td colSpan={4}></td>
                 <td>TOTAL</td>
                 <td>{Number(totalPreQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                <td>{Number((totalPreQty + totalQty).toFixed(2)).toLocaleString('en-IN')}</td>
+                <td>{Number(totalTodayQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                <td>{Number((totalPreQty + totalTodayQty).toFixed(2)).toLocaleString('en-IN')}</td>
+                <td>{Number(totalSaleQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                <td>{Number(((totalPreQty + totalTodayQty) - totalSaleQty).toFixed(2)).toLocaleString('en-IN')}</td>
+                <td></td>
+                <td>{Number((totalSpriceAmount).toFixed(2)).toLocaleString('en-IN')}</td>
+                <td></td>
+                <td>{Number((totalPpriceAmount).toFixed(2)).toLocaleString('en-IN')}</td>
               </tr>
             </tfoot>
           </table>

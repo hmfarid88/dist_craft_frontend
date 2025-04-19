@@ -7,6 +7,7 @@ import DateToDate from "@/app/components/DateToDate";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 interface Product {
     category: string;
@@ -120,6 +121,10 @@ const Page = () => {
         return total + product.qty;
     }, 0);
 
+    const totalProfit = filteredProducts.reduce((total, product) => {
+        return total + (product.sprice - product.pprice) * product.qty;
+    }, 0);
+
     const searchParams = useSearchParams();
     const access = searchParams.get('access');
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -193,24 +198,28 @@ const Page = () => {
                         <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                     </svg>
                 </label>
-                <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                <div className="flex gap-3">
+                    <ExcelExportButton tableRef={contentToPrint} fileName="RPDP_Report" />
+                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
                 <h4 className="font-bold">PROFIT / LOSS REPORT</h4>
                 <h4 className="pb-5"><CurrentMonthYear /></h4>
                 <div className="flex flex-col">
                     <table className="table table-sm">
-                        <thead>
+                        <thead className="sticky top-16 bg-base-100">
                             <tr>
                                 <th>SN</th>
                                 <th>CATEGORY</th>
                                 <th>BRAND</th>
                                 <th>PRODUCT NAME</th>
+                                <th>RP VALUE</th>
+                                <th>DP VALUE</th>
+                                <th>UNIT PROFIT</th>
+                                <th>PROFIT (%)</th>
                                 <th>QTY</th>
-                                <th>PURCHASE PRICE</th>
-                                <th>SALE PRICE</th>
-                                <th>DISCOUNT</th>
-                                <th>PROFIT</th>
+                                <th>PROFIT TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -220,11 +229,12 @@ const Page = () => {
                                     <td className="capitalize">{product.category}</td>
                                     <td className="capitalize">{product.brand}</td>
                                     <td className="capitalize">{product.productName}</td>
-                                    <td>{product.qty}</td>
-                                    <td>{product.pprice}</td>
-                                    <td>{product.sprice}</td>
-                                    <td>{product.discount}</td>
-                                    <td>{product.sprice - product.pprice - product.discount}</td>
+                                    <td>{Number((product.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((product.sprice - product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((((product.sprice - product.pprice) * 100) / (product.pprice)).toFixed(2)).toLocaleString('en-IN')} %</td>
+                                    <td>{Number((product.qty).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number(((product.sprice - product.pprice) * product.qty).toFixed(2)).toLocaleString('en-IN')}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -232,20 +242,22 @@ const Page = () => {
                             <tr className="font-bold">
                                 <td colSpan={3}></td>
                                 <td>TOTAL</td>
-                                <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number((totalSprice - totalPprice - totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td></td>
+                                <td></td>
+                                <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit).toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
                         </tfoot>
                     </table>
                     <div className="flex flex-col items-end text-xs font-semibold p-5 gap-2">
                         <label>TOTAL EXPENSE : {Number(totalExpense.toFixed(2)).toLocaleString('en-IN')}</label>
-                        <label>NET PROFIT : {Number((totalSprice - totalPprice - totalDiscount - totalExpense).toFixed(2)).toLocaleString('en-IN')}</label>
+                        <label>TOTAL DISCOUNT : {Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</label>
+                        <label>NET PROFIT : {Number((totalProfit - totalDiscount - totalExpense).toFixed(2)).toLocaleString('en-IN')}</label>
                         <label>PROFIT DEPOSIT : {Number(profitDeposit.toFixed(2)).toLocaleString('en-IN')}</label>
                         <label>PROFIT WITHDRAW : {Number(profitWithdraw.toFixed(2)).toLocaleString('en-IN')}</label>
-                        <label>PROFIT REMAINING : {Number((totalSprice + profitDeposit - totalPprice - totalDiscount - totalExpense - profitWithdraw).toFixed(2)).toLocaleString('en-IN')}</label>
+                        <label>PROFIT REMAINING : {Number((totalProfit + profitDeposit - totalDiscount - totalExpense - profitWithdraw).toFixed(2)).toLocaleString('en-IN')}</label>
                     </div>
                 </div>
             </div>

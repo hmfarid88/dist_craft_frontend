@@ -6,6 +6,7 @@ import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
 import { CgDetailsMore } from "react-icons/cg";
 import { useRouter } from "next/navigation";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 type Product = {
   paymentName: string;
@@ -24,7 +25,7 @@ const Page = () => {
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
   });
-  const handlePaymentsDetails=(paymentName:string)=>{
+  const handlePaymentsDetails = (paymentName: string) => {
     router.push(`/details-payment-report?paymentName=${paymentName}`);
   }
 
@@ -46,7 +47,7 @@ const Page = () => {
   useEffect(() => {
     const filtered = allProducts.filter(product =>
       (product.paymentName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-      
+
     );
     setFilteredProducts(filtered);
   }, [filterCriteria, allProducts]);
@@ -65,7 +66,7 @@ const Page = () => {
   return (
     <div className="container-2xl">
       <div className="flex flex-col w-full  min-h-[calc(100vh-228px)] items-center justify-center p-4">
-     
+
         <div className="flex w-full justify-between p-5">
           <label className="input input-bordered flex max-w-xs  items-center gap-2">
             <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -73,13 +74,16 @@ const Page = () => {
               <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
             </svg>
           </label>
-          <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          <div className="flex gap-2">
+            <ExcelExportButton tableRef={contentToPrint} fileName="pay_recv-report" />
+            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          </div>
         </div>
         <div className="overflow-x-auto items-center justify-center">
           <div ref={contentToPrint} className="flex-1 p-5">
             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DEBTOR-CREDITOR</h4><CurrentDate /></div>
             <table className="table table-sm">
-              <thead>
+              <thead className="sticky top-16 bg-base-100">
                 <tr>
                   <th>SN</th>
                   <th>DEBTOR/CREDITOR NAME</th>
@@ -93,8 +97,8 @@ const Page = () => {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{product.paymentName}</td>
-                    <td>{Number((product.payment-product.receive).toFixed(2)).toLocaleString('en-IN')}</td>
-                    <td><button  onClick={() => handlePaymentsDetails(product.paymentName)}  className="btn btn-success btn-xs btn-outline"><CgDetailsMore size={18} /></button></td>
+                    <td>{Number((product.payment - product.receive).toFixed(2)).toLocaleString('en-IN')}</td>
+                    <td><button onClick={() => handlePaymentsDetails(product.paymentName)} className="btn btn-success btn-xs btn-outline"><CgDetailsMore size={18} /></button></td>
                   </tr>
                 ))}
               </tbody>
@@ -102,7 +106,7 @@ const Page = () => {
                 <tr className="font-bold text-sm">
                   <td colSpan={1}></td>
                   <td>TOTAL</td>
-                  <td>{Number((totalPayment-totalReceive).toFixed(2)).toLocaleString('en-IN')}</td>
+                  <td>{Number((totalPayment - totalReceive).toFixed(2)).toLocaleString('en-IN')}</td>
                 </tr>
               </tfoot>
             </table>

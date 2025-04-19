@@ -4,6 +4,7 @@ import { useAppSelector } from "@/app/store";
 import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import CurrentDate from "@/app/components/CurrentDate";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 interface Product {
     id: string;
     brand: string;
@@ -83,7 +84,10 @@ const Page = () => {
                         <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                     </svg>
                 </label>
+                <div className="flex gap-3">
+                    <ExcelExportButton tableRef={contentToPrint} fileName="stock_returned"/>
                 <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                </div>
             </div>
 
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
@@ -91,7 +95,7 @@ const Page = () => {
                 <h4 className="pb-5"><CurrentDate /></h4>
                 <div className="flex items-center justify-center">
                     <table className="table table-sm">
-                        <thead>
+                    <thead className="sticky top-16 bg-base-100">
                             <tr>
                                 <th>SN</th>
                                 <th>CATEGORY</th>

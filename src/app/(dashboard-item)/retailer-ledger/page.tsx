@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import CurrentDate from "@/app/components/CurrentDate";
 import { CgDetailsMore } from "react-icons/cg";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 
 type Product = {
   retailerName: string;
@@ -56,7 +57,7 @@ const Page = () => {
     const filtered = allProducts.filter(product =>
       (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.area.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-     
+
     );
     setFilteredProducts(filtered);
   }, [filterCriteria, allProducts]);
@@ -91,7 +92,10 @@ const Page = () => {
               <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
             </svg>
           </label>
-          <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          <div className="flex">
+            <ExcelExportButton tableRef={contentToPrint} fileName="rtailer_ledger" />
+            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          </div>
         </div>
         <div className="flex w-full justify-center">
           <div className="overflow-x-auto">
@@ -100,7 +104,7 @@ const Page = () => {
                 <h4><CurrentDate /></h4>
               </div>
               <table className="table table-xs md:table-sm table-pin-rows">
-                <thead>
+                <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
                     <th>RETAILER NAME</th>
@@ -121,12 +125,12 @@ const Page = () => {
                       <td>{index + 1}</td>
                       <td className="uppercase">{product?.retailerName}</td>
                       <td className="uppercase">{product?.area}</td>
-                      <td>{Number((product?.totalProductValue-product?.todayProductValue).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.totalProductValue - product?.todayProductValue).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(product?.previousPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue-product?.todayProductValue-product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.todayProductValue-product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
                       <td><button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info"><CgDetailsMore size={18} /></button></td>
 
@@ -137,12 +141,12 @@ const Page = () => {
                   <tr className="font-semibold text-lg">
                     <td colSpan={2}></td>
                     <td>TOTAL</td>
-                    <td>{(totalValue-currentValue).toLocaleString('en-IN')}</td>
+                    <td>{(totalValue - currentValue).toLocaleString('en-IN')}</td>
                     <td>{totalPayment.toLocaleString('en-IN')}</td>
-                    <td>{(totalValue-currentValue-totalPayment).toLocaleString('en-IN')}</td>
+                    <td>{(totalValue - currentValue - totalPayment).toLocaleString('en-IN')}</td>
                     <td>{currentValue.toLocaleString('en-IN')}</td>
                     <td>{currentPayment.toLocaleString('en-IN')}</td>
-                    <td>{(currentValue-currentPayment).toLocaleString('en-IN')}</td>
+                    <td>{(currentValue - currentPayment).toLocaleString('en-IN')}</td>
                     <td>{totalBalance.toLocaleString('en-IN')}</td>
                   </tr>
                 </tfoot>
