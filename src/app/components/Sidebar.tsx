@@ -66,7 +66,8 @@ export const Sidebar = () => {
                         <details>
                             <summary><TbReportSearch size={20} /> SALE REPORT</summary>
                             <ul>
-                                <li><Link href="/salereport">RETAILER SALE</Link></li>
+                                <li><Link href="/salesummary">SALE SUMMARY</Link></li>
+                                <li><Link href="/salereport">SALE DETAILS</Link></li>
                                 <li><Link href="/vendor-sale-report">VENDOR SALE</Link></li>
                             </ul>
                         </details>

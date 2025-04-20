@@ -35,6 +35,8 @@ const Page = () => {
   const [supplier, setSupplier] = useState("");
   const [productName, setProductName] = useState("");
   const [pprice, setPprice] = useState(0);
+  const [date, setDate] = useState("");
+
 
   const [type, setType] = useState('');
   const [newPprice, setNewPprice] = useState('');
@@ -47,6 +49,13 @@ const Page = () => {
   const router = useRouter();
   const [selectedValue, setSelectedValue] = useState(null);
 
+  const handleDatewise = (e: any) => {
+    if (!date) {
+      toast.info("No date selected!")
+      return;
+    }
+    router.push(`/datewise-stockreport?date=${date}`);
+  }
   const handleRadioChange = (e: any) => {
     setSelectedValue(e.target.value);
   };
@@ -171,19 +180,24 @@ const Page = () => {
   const totalSaleQty = filteredProducts.reduce((total, product) => {
     return total + product.saleToday;
   }, 0);
-  const totalPprice = filteredProducts.reduce((total, product) => {
-    return total + product.pprice;
-  }, 0);
+  
   const totalPpriceAmount = filteredProducts.reduce((total, product) => {
     return total + (((product.countBeforeToday + product.countToday) - product.saleToday) * product.pprice);
   }, 0);
+
   const totalSpriceAmount = filteredProducts.reduce((total, product) => {
     return total + (((product.countBeforeToday + product.countToday) - product.saleToday) * product.sprice);
   }, 0);
 
   return (
     <div className="container-2xl min-h-[calc(100vh-228px)]">
-      <div className="flex pt-2 pl-5"><a href="#my_modal_stock" className="btn btn-square btn-ghost"><FcAutomatic size={32} /></a></div>
+      <div className="flex justify-center gap-5 pt-2 pl-5 pr-5">
+        <a href="#my_modal_stock" className="btn btn-square btn-ghost"><FcAutomatic size={40} /></a>
+        <div className="flex gap-2">
+          <input type="date" onChange={(e: any) => setDate(e.target.value)} className="input btn-outline" />
+          <button onClick={handleDatewise} className="btn btn-outline btn-square">GO</button>
+        </div>
+      </div>
       <div className="flex justify-between pl-5 pr-5 pt-5">
         <label className="input input-bordered flex max-w-xs  items-center gap-2">
           <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -193,7 +207,7 @@ const Page = () => {
         </label>
         <div className="flex gap-3">
           <ExcelExportButton tableRef={contentToPrint} fileName="stock_summary" />
-        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
         </div>
       </div>
 
@@ -202,7 +216,7 @@ const Page = () => {
         <h4 className="pb-5"><CurrentDate /></h4>
         <div className="flex items-center justify-center">
           <table className="table table-sm">
-          <thead className="sticky top-16 bg-base-100">
+            <thead className="sticky top-16 bg-base-100">
               <tr>
                 <th>SN</th>
                 <th>CATEGORY</th>
