@@ -7,6 +7,7 @@ import CurrentDate from "@/app/components/CurrentDate";
 import { CgDetailsMore } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
   paymentName: string;
@@ -81,6 +82,7 @@ const Page = () => {
         </div>
         <div className="overflow-x-auto items-center justify-center">
           <div ref={contentToPrint} className="flex-1 p-5">
+          <CompanyInfo />
             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DEBTOR-CREDITOR</h4><CurrentDate /></div>
             <table className="table table-sm">
               <thead className="sticky top-16 bg-base-100">

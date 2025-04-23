@@ -7,6 +7,7 @@ import DateToDate from "@/app/components/DateToDate";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     cname: string;
@@ -51,26 +52,26 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, startDate, endDate]);
 
-  
-     useEffect(() => {
-                const searchWords = filterCriteria.toLowerCase().split(" ");
-            
-                const filtered = soldProducts.filter(product =>
-                  searchWords.every(word =>
-                    (product.category?.toLowerCase().includes(word) || '') ||
-                    (product.brand?.toLowerCase().includes(word) || '') ||
-                    (product.date?.toLowerCase().includes(word) || '') ||
-                    (product.color?.toLowerCase().includes(word) || '') ||
-                    (product.productno?.toLowerCase().includes(word) || '') ||
-                    (product.cname?.toLowerCase().includes(word) || '') ||
-                    (product.soldby?.toLowerCase().includes(word) || '') ||
-                    (product.phoneNumber?.toLowerCase().includes(word) || '') ||
-                    (product.productName?.toLowerCase().includes(word) || '')
-                  )
-                );
-              
-                setFilteredProducts(filtered);
-              }, [filterCriteria, soldProducts]);
+
+    useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+
+        const filtered = soldProducts.filter(product =>
+            searchWords.every(word =>
+                (product.category?.toLowerCase().includes(word) || '') ||
+                (product.brand?.toLowerCase().includes(word) || '') ||
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.color?.toLowerCase().includes(word) || '') ||
+                (product.productno?.toLowerCase().includes(word) || '') ||
+                (product.cname?.toLowerCase().includes(word) || '') ||
+                (product.soldby?.toLowerCase().includes(word) || '') ||
+                (product.phoneNumber?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '')
+            )
+        );
+
+        setFilteredProducts(filtered);
+    }, [filterCriteria, soldProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
@@ -102,15 +103,16 @@ const Page = () => {
                 </label>
                 <div className="flex gap-3">
                     <ExcelExportButton tableRef={contentToPrint} fileName="datewise_sale_report" />
-                <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                 </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">SALE REPORT</h4>
                 <h4 className="pb-5">{startDate} TO {endDate}</h4>
                 <div className="flex items-center justify-center">
                     <table className="table table-sm">
-                    <thead className="sticky top-16 bg-base-100">
+                        <thead className="sticky top-16 bg-base-100">
                             <tr>
                                 <th>SN</th>
                                 <th>SALE DATE</th>

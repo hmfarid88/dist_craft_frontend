@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import CurrentDate from "@/app/components/CurrentDate";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 interface Product {
     id: string;
     brand: string;
@@ -92,6 +93,7 @@ const Page = () => {
             </div>
 
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">STOCK DETAILS</h4>
                 <h4 className="pb-5"><CurrentDate /></h4>
                 <table className="table table-sm">

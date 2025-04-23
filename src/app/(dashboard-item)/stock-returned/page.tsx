@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import CurrentDate from "@/app/components/CurrentDate";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 interface Product {
     id: string;
     brand: string;
@@ -42,11 +43,11 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-     useEffect(() => {
-            const searchWords = filterCriteria.toLowerCase().split(" ");
-          
-            const filtered = allProducts.filter(product =>
-              searchWords.every(word =>
+    useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+
+        const filtered = allProducts.filter(product =>
+            searchWords.every(word =>
                 (product.category?.toLowerCase().includes(word) || '') ||
                 (product.brand?.toLowerCase().includes(word) || '') ||
                 (product.date?.toLowerCase().includes(word) || '') ||
@@ -55,11 +56,11 @@ const Page = () => {
                 (product.supplier?.toLowerCase().includes(word) || '') ||
                 (product.supplierInvoice?.toLowerCase().includes(word) || '') ||
                 (product.productName?.toLowerCase().includes(word) || '')
-              )
-            );
-          
-            setFilteredProducts(filtered);
-          }, [filterCriteria, allProducts]);
+            )
+        );
+
+        setFilteredProducts(filtered);
+    }, [filterCriteria, allProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
@@ -85,17 +86,18 @@ const Page = () => {
                     </svg>
                 </label>
                 <div className="flex gap-3">
-                    <ExcelExportButton tableRef={contentToPrint} fileName="stock_returned"/>
-                <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    <ExcelExportButton tableRef={contentToPrint} fileName="stock_returned" />
+                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                 </div>
             </div>
 
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">STOCK RETURNED</h4>
                 <h4 className="pb-5"><CurrentDate /></h4>
                 <div className="flex items-center justify-center">
                     <table className="table table-sm">
-                    <thead className="sticky top-16 bg-base-100">
+                        <thead className="sticky top-16 bg-base-100">
                             <tr>
                                 <th>SN</th>
                                 <th>CATEGORY</th>

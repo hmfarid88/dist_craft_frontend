@@ -51,7 +51,7 @@ const Page = () => {
                             <div className="collapse collapse-arrow bg-base-200">
                                 {/* <input type="radio" name="my-accordion-2" /> */}
                                 <input type="checkbox" className="peer" />
-                                <div className="collapse-title text-sm font-medium">SHOP SETTING</div>
+                                <div className="collapse-title text-sm font-medium">ADDRESS SETTING</div>
                                 <div className="collapse-content">
                                     <ShopInfo />
                                 </div>

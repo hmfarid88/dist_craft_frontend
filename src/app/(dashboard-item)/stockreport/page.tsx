@@ -8,6 +8,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
   category: string;
@@ -150,9 +151,9 @@ const Page = () => {
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
 
+
   useEffect(() => {
     const searchWords = filterCriteria.toLowerCase().split(" ");
-
     const filtered = allProducts.filter(product =>
       searchWords.every(word =>
         (product.category?.toLowerCase().includes(word) || '') ||
@@ -180,7 +181,7 @@ const Page = () => {
   const totalSaleQty = filteredProducts.reduce((total, product) => {
     return total + product.saleToday;
   }, 0);
-  
+
   const totalPpriceAmount = filteredProducts.reduce((total, product) => {
     return total + (((product.countBeforeToday + product.countToday) - product.saleToday) * product.pprice);
   }, 0);
@@ -212,6 +213,7 @@ const Page = () => {
       </div>
 
       <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+        <CompanyInfo />
         <h4 className="font-bold">STOCK SUMMARY</h4>
         <h4 className="pb-5"><CurrentDate /></h4>
         <div className="flex items-center justify-center">

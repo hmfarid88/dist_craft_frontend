@@ -7,6 +7,7 @@ import CurrentDate from "@/app/components/CurrentDate";
 import { CgDetailsMore } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
 
@@ -76,6 +77,7 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
+
                     <div className="flex">
                         <ExcelExportButton tableRef={contentToPrint} fileName="supplier_report" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
@@ -83,6 +85,7 @@ const Page = () => {
                 </div>
                 <div className="overflow-x-auto items-center justify-center">
                     <div ref={contentToPrint} className="flex-1 p-5">
+                        <CompanyInfo />
                         <div className="flex flex-col items-center pb-5"><h4 className="font-bold">SUPPLIER LEDGER</h4><CurrentDate /></div>
                         <table className="table table-sm">
                             <thead className="sticky top-16 bg-base-100">
@@ -98,7 +101,7 @@ const Page = () => {
                                 {filteredProducts?.map((product, index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{product.supplierName}</td>
+                                        <td className="uppercase">{product.supplierName}</td>
                                         <td>{Number((product.balance).toFixed(2)).toLocaleString('en-IN')}</td>
                                         <td><button onClick={() => handleSupplierDetails(product.supplierName)} className="btn btn-success btn-xs btn-outline"><CgDetailsMore size={18} /></button></td>
                                     </tr>

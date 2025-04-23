@@ -4,12 +4,15 @@ import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import { toast } from "react-toastify";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
     date: string;
     invoice: string;
+    qty: number;
     pvalue: number;
     svalue: number;
     payment: number;
@@ -22,7 +25,8 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const router = useRouter();
+    const [date, setDate] = useState("");
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -44,7 +48,13 @@ const Page = () => {
             })
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, supplierName]);
-
+    const handleDatewise = (e: any) => {
+        if (!date) {
+            toast.info("No date selected!")
+            return;
+        }
+        router.push(`/datewise-supplierReport?username=${username}&supplierName=${supplierName}&date=${date}`);
+    }
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -64,7 +74,21 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-
+    const totalQty = filteredProducts.reduce((total, product) => {
+        return total + product.qty;
+    }, 0);
+    const totalPayment = filteredProducts.reduce((total, product) => {
+        return total + product.payment;
+    }, 0);
+    const totalReceive = filteredProducts.reduce((total, product) => {
+        return total + product.receive;
+    }, 0);
+    const totalPvalue = filteredProducts.reduce((total, product) => {
+        return total + product.pvalue;
+    }, 0);
+    const totalSvalue = filteredProducts.reduce((total, product) => {
+        return total + product.svalue;
+    }, 0);
     let cumulativeBalance = 0;
 
     return (
@@ -79,14 +103,19 @@ const Page = () => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
+                        <input type="date" onChange={(e: any) => setDate(e.target.value)} className="input btn-outline" />
+                        <button onClick={handleDatewise} className="btn btn-outline btn-square">GO</button>
+                    </div>
+                    <div className="flex gap-2">
                         <ExcelExportButton tableRef={contentToPrint} fileName="details_supplier_ledger" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="overflow-x-auto items-center justify-center">
                     <div ref={contentToPrint} className="flex-1 p-5">
+                        <CompanyInfo />
                         <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DETAILS SUPPLIER</h4>
-                            <h4>Supplier: {supplierName}</h4>
+                            <h4 className="uppercase">Supplier: {supplierName}</h4>
                             <CurrentDate /></div>
                         <table className="table table-sm">
                             <thead className="sticky top-16 bg-base-100">
@@ -94,9 +123,10 @@ const Page = () => {
                                     <th>SN</th>
                                     <th>DATE</th>
                                     <th>INVOICE NO</th>
-                                    <th>PURCHASE VALUE</th>
-                                    <th>SALE VALUE</th>
                                     <th>NOTE</th>
+                                    <th>QTY</th>
+                                    <th>DP VALUE</th>
+                                    <th>RP VALUE</th>
                                     <th>PAYMENT</th>
                                     <th>RECEIVE</th>
                                     <th>BALANCE</th>
@@ -113,10 +143,11 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
-                                            <td>{product.invoice}</td>
+                                            <td className="uppercase">{product.invoice}</td>
+                                            <td className="uppercase">{product?.note}</td>
+                                            <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.svalue.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td className="capitalize">{product?.note}</td>
                                             <td>{Number(product.payment.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.receive.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
@@ -124,7 +155,16 @@ const Page = () => {
                                     );
                                 })}
                             </tbody>
+                            <tr className="font-semibold text-lg">
+                                <td colSpan={3}></td>
+                                <td>TOTAL</td>
+                                <td>{(totalQty).toLocaleString('en-IN')}</td>
+                                <td>{totalPvalue.toLocaleString('en-IN')}</td>
+                                <td>{(totalSvalue).toLocaleString('en-IN')}</td>
+                                <td>{totalPayment.toLocaleString('en-IN')}</td>
+                                <td>{totalReceive.toLocaleString('en-IN')}</td>
 
+                            </tr>
                         </table>
                     </div>
                 </div>

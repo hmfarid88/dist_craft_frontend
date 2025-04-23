@@ -6,6 +6,7 @@ import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { useSearchParams } from "next/navigation";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -26,7 +27,7 @@ const Page = () => {
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
-    
+
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -64,12 +65,12 @@ const Page = () => {
         return total + product.qty;
     }, 0);
     const totalSprice = filteredProducts.reduce((total, product) => {
-        return total + product.sprice ;
+        return total + product.sprice;
     }, 0);
 
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
-                       <div className="flex justify-between pl-5 pr-5 pt-5">
+            <div className="flex justify-between pl-5 pr-5 pt-5">
                 <label className="input input-bordered flex max-w-xs  items-center gap-2">
                     <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 opacity-70">
@@ -82,6 +83,7 @@ const Page = () => {
                 </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">SALE REPORT</h4>
                 <h4 className="pb-5">{date}</h4>
                 <div className="flex items-center justify-center">

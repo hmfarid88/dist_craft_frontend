@@ -6,6 +6,7 @@ import { FcPrint } from "react-icons/fc";
 import DateToDate from "@/app/components/DateToDate";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -78,7 +79,7 @@ const Page = () => {
 
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
-            <div className="flex justify-between pl-5 pr-5 pt-5">
+            <div className="flex justify-center pl-5 pr-5 pt-5">
                 <DateToDate routePath="/datewise-entry-report" />
 
             </div>
@@ -95,6 +96,7 @@ const Page = () => {
                 </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+            <CompanyInfo />
                 <h4 className="font-bold">PRODUCT ENTRY REPORT</h4>
                 <h4 className="pb-5"><CurrentMonthYear /></h4>
                 <div className="flex items-center justify-center">

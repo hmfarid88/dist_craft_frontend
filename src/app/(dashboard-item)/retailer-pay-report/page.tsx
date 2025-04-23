@@ -6,6 +6,7 @@ import { useReactToPrint } from 'react-to-print';
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import DateToDate from "@/app/components/DateToDate";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
     date: string;
@@ -81,6 +82,7 @@ const Page = () => {
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
                         <div ref={contentToPrint} className="flex-1 p-5">
+                            <CompanyInfo />
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">RETAILER PAYMENT REPORT</h4><CurrentMonthYear /></div>
                             <table className="table table-xs md:table-sm table-pin-rows">
                                 <thead className="sticky top-16 bg-base-100">

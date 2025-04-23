@@ -7,6 +7,7 @@ import { FcPrint } from "react-icons/fc";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -70,7 +71,7 @@ const Page = () => {
         return total + product.qty;
     }, 0);
     const totalSprice = filteredProducts.reduce((total, product) => {
-        return total + product.sprice ;
+        return total + product.sprice;
     }, 0);
 
     return (
@@ -92,6 +93,7 @@ const Page = () => {
                 </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">SALE REPORT</h4>
                 <h4 className="pb-5"><CurrentDate /></h4>
                 <div className="flex items-center justify-center">

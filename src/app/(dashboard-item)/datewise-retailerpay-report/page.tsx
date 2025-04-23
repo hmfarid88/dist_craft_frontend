@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { MdOutlineEditNote } from "react-icons/md";
 import { toast } from "react-toastify";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
     id: number;
@@ -92,6 +93,7 @@ const Page = () => {
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
                         <div ref={contentToPrint} className="flex-1 p-5">
+                        <CompanyInfo />
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">RETAILER PAYMENT REPORT</h4>
                                 <h4>{startDate} TO {endDate}</h4>
                             </div>

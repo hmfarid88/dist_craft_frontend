@@ -7,6 +7,7 @@ import { FcCalendar, FcPrint } from "react-icons/fc";
 import DateToDate from "@/app/components/DateToDate";
 import Link from "next/link";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
   cname: string;
@@ -85,9 +86,9 @@ const Page = () => {
   }, 0);
   return (
     <div className="container-2xl min-h-[calc(100vh-228px)]">
-      <div className="flex justify-between p-5 gap-5">
+      <div className="flex justify-center p-5 gap-10">
         <DateToDate routePath="/datewise-salereport" />
-        <Link href="/monthly-salereport"><button className="btn btn-info"><FcCalendar size={30} />Monthly Sale</button></Link>
+        <Link className="mt-8" href="/monthly-salereport"><button className="btn btn-info"><FcCalendar size={30} />Monthly Sale</button></Link>
       </div>
       <div className="flex justify-between pl-5 pr-5 pt-5">
         <label className="input input-bordered flex max-w-xs  items-center gap-2">
@@ -102,6 +103,7 @@ const Page = () => {
         </div>
       </div>
       <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+        <CompanyInfo />
         <h4 className="font-bold">SALE REPORT</h4>
         <h4 className="pb-5"><CurrentDate /></h4>
         <div className="flex items-center justify-center">

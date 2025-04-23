@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import CurrentDate from "@/app/components/CurrentDate";
 import { useSearchParams } from "next/navigation";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -61,10 +62,11 @@ const Page = () => {
             </div>
 
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">PRODUCT INFO</h4>
                 <h4 className="p-2"><CurrentDate /></h4>
                 <div className="flex items-center justify-center">
-                {allProducts.length === 0 && <p className="text-accent">No product information available.</p>}
+                    {allProducts.length === 0 && <p className="text-accent">No product information available.</p>}
                     {allProducts?.map((product, index) => (
                         <div key={index} className="card card-body card-bordered capitalize">
                             <table className="table table-sm table-zebra">

@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import { FcPrint } from "react-icons/fc";
 import { useSearchParams } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -139,6 +140,7 @@ const Page = () => {
                 </div>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">PROFIT / LOSS REPORT</h4>
                 <h4 className="pb-5">{getMonthName(month)} {year}</h4>
                 <div className="flex flex-col">

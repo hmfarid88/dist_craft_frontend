@@ -11,9 +11,12 @@ import CompanyInfo from "@/app/components/CompanyInfo";
 type Product = {
     date: string;
     invoice: string;
-    productAmount: number;
-    vatAmount: number;
+    qty: number;
+    pvalue: number;
+    svalue: number;
     payment: number;
+    receive: number;
+    note: string;
 
 };
 
@@ -28,22 +31,22 @@ const Page = () => {
     });
 
     const searchParams = useSearchParams();
-    const retailerName = searchParams.get('retailerName');
+    const supplierName = searchParams.get('supplierName');
+    const date = searchParams.get('date');
 
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/payment/getDeatailsRetailerBalance?username=${encodeURIComponent(username)}&retailerName=${encodeURIComponent(retailerName ?? "")}`)
+        fetch(`${apiBaseUrl}/payment/getDatewiseSupplier-details?username=${encodeURIComponent(username)}&supplierName=${encodeURIComponent(supplierName ?? "")}&date=${encodeURIComponent(date ?? "")}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, retailerName]);
-
+    }, [apiBaseUrl, username, supplierName, date]);
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -51,8 +54,8 @@ const Page = () => {
         const filtered = allProducts.filter(product =>
             searchWords.every(word =>
                 (product.date?.toLowerCase().includes(word) || '') ||
-                (product.invoice?.toLowerCase().includes(word) || '')
-
+                (product.invoice?.toLowerCase().includes(word) || '') ||
+                (product.note?.toLowerCase().includes(word) || '')
             )
         );
 
@@ -63,7 +66,21 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-
+    const totalQty = filteredProducts.reduce((total, product) => {
+        return total + product.qty;
+    }, 0);
+    const totalPayment = filteredProducts.reduce((total, product) => {
+        return total + product.payment;
+    }, 0);
+    const totalReceive = filteredProducts.reduce((total, product) => {
+        return total + product.receive;
+    }, 0);
+    const totalPvalue = filteredProducts.reduce((total, product) => {
+        return total + product.pvalue;
+    }, 0);
+    const totalSvalue = filteredProducts.reduce((total, product) => {
+        return total + product.svalue;
+    }, 0);
     let cumulativeBalance = 0;
 
     return (
@@ -77,16 +94,17 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
+
                     <div className="flex gap-2">
-                        <ExcelExportButton tableRef={contentToPrint} fileName="details_retail_ledger" />
+                        <ExcelExportButton tableRef={contentToPrint} fileName="details_supplier_ledger" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="overflow-x-auto items-center justify-center">
                     <div ref={contentToPrint} className="flex-1 p-5">
                         <CompanyInfo />
-                        <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DETAILS RETAILER LEDGER</h4>
-                            <h4>Reatiler: {retailerName}</h4>
+                        <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DETAILS SUPPLIER</h4>
+                            <h4 className="uppercase">Supplier: {supplierName}</h4>
                             <CurrentDate /></div>
                         <table className="table table-sm">
                             <thead className="sticky top-16 bg-base-100">
@@ -94,15 +112,20 @@ const Page = () => {
                                     <th>SN</th>
                                     <th>DATE</th>
                                     <th>INVOICE NO</th>
-                                    <th>PRODUCT VALUE</th>
+                                    <th>NOTE</th>
+                                    <th>QTY</th>
+                                    <th>DP VALUE</th>
+                                    <th>RP VALUE</th>
                                     <th>PAYMENT</th>
+                                    <th>RECEIVE</th>
                                     <th>BALANCE</th>
+
                                 </tr>
                             </thead>
                             <tbody>
 
                                 {filteredProducts?.map((product, index) => {
-                                    const currentBalance = product.productAmount + product.vatAmount - product.payment;
+                                    const currentBalance = product.pvalue + product.receive - product.payment - product.svalue;
                                     cumulativeBalance += currentBalance;
 
                                     return (
@@ -110,14 +133,27 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
                                             <td className="uppercase">{product.invoice}</td>
-                                            <td>{Number((product.productAmount + product.vatAmount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td className="uppercase">{product?.note}</td>
+                                            <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.svalue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.payment.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.receive.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
+                            <tr className="font-semibold text-lg">
+                                <td colSpan={3}></td>
+                                <td>TOTAL</td>
+                                <td>{(totalQty).toLocaleString('en-IN')}</td>
+                                <td>{totalPvalue.toLocaleString('en-IN')}</td>
+                                <td>{(totalSvalue).toLocaleString('en-IN')}</td>
+                                <td>{totalPayment.toLocaleString('en-IN')}</td>
+                                <td>{totalReceive.toLocaleString('en-IN')}</td>
 
+                            </tr>
                         </table>
                     </div>
                 </div>

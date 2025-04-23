@@ -5,6 +5,7 @@ import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from "react-to-print";
 import { useSearchParams } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
     category: string;
@@ -22,14 +23,14 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-   
+
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
     const searchParams = useSearchParams();
     const date = searchParams.get('date');
-    
+
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -99,6 +100,7 @@ const Page = () => {
             </div>
 
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
+                <CompanyInfo />
                 <h4 className="font-bold">STOCK SUMMARY</h4>
                 <h4 className="pb-5">{date}</h4>
                 <div className="flex items-center justify-center">
