@@ -4,6 +4,7 @@ import { useAppSelector } from '@/app/store';
 import React, { useEffect, useRef, useState } from 'react'
 import { FcPrint } from 'react-icons/fc';
 import { useReactToPrint } from 'react-to-print';
+import CompanyInfo from './CompanyInfo';
 
 const BalanceSheet = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -51,6 +52,16 @@ const BalanceSheet = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
+    const [retailerBalance, setRetailerBalance] = useState(0);
+    useEffect(() => {
+        fetch(`${apiBaseUrl}/payment/getRetailerDue?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                setRetailerBalance(data);
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    }, [apiBaseUrl, username]);
+
 
     const [stockValue, setStockValue] = useState(0);
     useEffect(() => {
@@ -72,6 +83,7 @@ const BalanceSheet = () => {
             <div className="w-full card">
                 <div ref={contentToPrint} className="flex flex-col w-full items-center justify-center pt-5">
                     <div className="flex flex-col items-center justify-center">
+                        <CompanyInfo />
                         <h4 className='font-bold'>BALANCE SHEET</h4>
                         <h4 className='font-semibold'><CurrentDate /></h4>
                     </div>
@@ -98,6 +110,10 @@ const BalanceSheet = () => {
                                             <td>TOTAL DEBITOR</td>
                                             <td>{(payments ?? 0).toLocaleString('en-IN')}</td>
                                         </tr>
+                                        <tr>
+                                            <td>RETAILER DUE</td>
+                                            <td>{(retailerBalance ?? 0).toLocaleString('en-IN')}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>PRODUCT STOCK</td>
@@ -109,7 +125,7 @@ const BalanceSheet = () => {
                                     <tfoot>
                                         <tr className='text-sm font-bold'>
                                             <td>TOTAL ASSETS</td>
-                                            <td>{Number(netcashToday + payments + stockValue).toLocaleString('en-IN')}</td>
+                                            <td>{Number(netcashToday + retailerBalance + payments + stockValue).toLocaleString('en-IN')}</td>
 
                                         </tr>
                                     </tfoot>
@@ -134,14 +150,14 @@ const BalanceSheet = () => {
                                         </tr>
                                         <tr className='font-semibold'>
                                             <td className='text-sm'>OWNER&apos;S EQUITY </td>
-                                            <td>{Number((netcashToday + payments + stockValue) - (receives + supplierBalance)).toLocaleString('en-IN')}</td>
+                                            <td>{Number((netcashToday + payments + retailerBalance + stockValue) - (receives + supplierBalance)).toLocaleString('en-IN')}</td>
                                         </tr>
 
                                     </tbody>
                                     <tfoot>
                                         <tr className='text-sm font-bold'>
                                             <td>TOTAL LIABILITIES</td>
-                                            <td>{Number(receives + supplierBalance + ((netcashToday + payments + stockValue) - (receives + supplierBalance))).toLocaleString('en-IN')}</td>
+                                            <td>{Number(receives + supplierBalance + ((netcashToday + payments + retailerBalance + stockValue) - (receives + supplierBalance))).toLocaleString('en-IN')}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
