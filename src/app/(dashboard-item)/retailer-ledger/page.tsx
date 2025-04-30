@@ -209,8 +209,8 @@ const Page = () => {
 
                         {/* Right side column only on first row of each area */}
                         {idx === 0 && (
-                          <td rowSpan={products.length} className="bg-base-200 text-center align-middle">
-                            <div>
+                          <td rowSpan={products.length} className="bg-base-200 text-center">
+                            <div className="border border-slate-700">
                               <div className="font-bold">{area}</div>
                               <div>Total Coll: {totalCollection.toLocaleString("en-IN")}</div>
                               <div>Total Due: {totalDue.toLocaleString("en-IN")}</div>
