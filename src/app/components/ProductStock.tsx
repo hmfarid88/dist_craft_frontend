@@ -30,36 +30,3 @@ const ProductStock = () => {
 
  export default ProductStock
 
-// useFetchProducts.js
-// import { useState, useEffect } from "react";
-
-// const useFetchProducts = (username:any) => {
-//   const [allProducts, setAllProducts] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     if (username) {
-//       setLoading(true);
-//       fetch(`http://localhost:8080/api/getProductStock?username=${username}`)
-//         .then((response) => {
-//           if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//           }
-//           return response.json();
-//         })
-//         .then((data) => {
-//           setAllProducts(data);
-//           setLoading(false);
-//         })
-//         .catch((error) => {
-//           setError(error);
-//           setLoading(false);
-//         });
-//     }
-//   }, [username]);
-
-//   return { allProducts, loading, error };
-// };
-
-// export default useFetchProducts;

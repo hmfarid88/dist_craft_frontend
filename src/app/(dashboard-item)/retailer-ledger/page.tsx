@@ -19,6 +19,11 @@ type Product = {
   currentPaymentTotal: number;
   previousPaymentTotal: number;
 };
+type AreaGroup = {
+  products: Product[];
+  totalCollection: number;
+  totalDue: number;
+};
 
 
 const Page = () => {
@@ -95,6 +100,32 @@ const Page = () => {
     return total + product.totalProductValue - product.previousPaymentTotal - product.currentPaymentTotal - product.todayPreviousPayment;
   }, 0);
 
+  const areaGroups: Record<string, AreaGroup> = {};
+
+  filteredProducts?.forEach((product) => {
+    const area = product.area;
+
+    if (!areaGroups[area]) {
+      areaGroups[area] = {
+        products: [],
+        totalCollection: 0,
+        totalDue: 0,
+      };
+    }
+
+    const todayDue = product.todayProductValue - product.currentPaymentTotal;
+    const previousDue =
+      product.totalProductValue -
+      product.todayProductValue -
+      product.previousPaymentTotal -
+      product.todayPreviousPayment;
+
+    areaGroups[area].products.push(product);
+    areaGroups[area].totalCollection += product.currentPaymentTotal + product.todayPreviousPayment;
+    areaGroups[area].totalDue += todayDue + previousDue;
+  });
+  let serialNo = 1;
+
   return (
     <div className="container-2xl">
       <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -135,9 +166,10 @@ const Page = () => {
                     <th>CURRENT TOTAL</th>
                     <th>TOTAL DUE</th>
                     <th>DETAILS</th>
+                    <th>AREA SUMMARY</th>
                   </tr>
                 </thead>
-                <tbody>
+                {/* <tbody>
                   {filteredProducts?.map((product, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
@@ -154,7 +186,42 @@ const Page = () => {
 
                     </tr>
                   ))}
+                </tbody> */}
+                <tbody>
+                  {Object.entries(areaGroups)?.map(([area, { products, totalCollection, totalDue }]) => {
+                    return products.map((product, idx) => (
+                      <tr key={`${area}-${idx}`}>
+                        <td>{serialNo ++}</td>
+                        <td className="uppercase">{product?.retailerName}</td>
+                        <td className="uppercase">{product?.area}</td>
+                        <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.todayPreviousPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal - product?.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal - product.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>
+                          <button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">
+                            <CgDetailsMore size={18} />
+                          </button>
+                        </td>
+
+                        {/* Right side column only on first row of each area */}
+                        {idx === 0 && (
+                          <td rowSpan={products.length} className="bg-base-200 text-center align-middle">
+                            <div>
+                              <div className="font-bold">{area}</div>
+                              <div>Total Coll: {totalCollection.toLocaleString("en-IN")}</div>
+                              <div>Total Due: {totalDue.toLocaleString("en-IN")}</div>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ));
+                  })}
                 </tbody>
+
                 <tfoot>
                   <tr className="font-semibold text-lg">
                     <td colSpan={2}></td>

@@ -20,6 +20,12 @@ type Product = {
     note: string;
 
 };
+type modatProduct = {
+    productName: string;
+    color: string;
+    pprice: number;
+    qty: number;
+};
 
 const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -38,7 +44,8 @@ const Page = () => {
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
-
+    const [selectedInvoiceDetails, setSelectedInvoiceDetails] = useState<modatProduct[]>([]);
+    const [showModal, setShowModal] = useState(false);
     useEffect(() => {
         fetch(`${apiBaseUrl}/payment/getSupplierBalance-details?username=${encodeURIComponent(username)}&supplierName=${encodeURIComponent(supplierName ?? "")}`)
             .then(response => response.json())
@@ -74,6 +81,20 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
+
+    const handleInvoiceClick = (invoice: string | undefined) => {
+        fetch(`${apiBaseUrl}/payment/getProductInfo?username=${encodeURIComponent(username)}&supplierInvoice=${encodeURIComponent(invoice ?? "")}`)
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                setSelectedInvoiceDetails(data);
+                setShowModal(true);
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    };
+
     const totalQty = filteredProducts.reduce((total, product) => {
         return total + product.qty;
     }, 0);
@@ -88,6 +109,12 @@ const Page = () => {
     }, 0);
     const totalSvalue = filteredProducts.reduce((total, product) => {
         return total + product.svalue;
+    }, 0);
+    const totalInvoiceQty = selectedInvoiceDetails.reduce((total, product) => {
+        return total + product.qty;
+    }, 0);
+    const totalInvoicevalue = selectedInvoiceDetails.reduce((total, product) => {
+        return total + product.qty * product.pprice;
     }, 0);
     let cumulativeBalance = 0;
 
@@ -143,7 +170,7 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
-                                            <td className="uppercase">{product.invoice}</td>
+                                            <td><button onClick={() => handleInvoiceClick(product.invoice)} className="btn btn-ghost btn-sm uppercase">{product.invoice}</button></td>
                                             <td className="uppercase">{product?.note}</td>
                                             <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
@@ -168,6 +195,49 @@ const Page = () => {
                         </table>
                     </div>
                 </div>
+                {showModal && (
+                    <div className="modal modal-open sm:modal-middle">
+                        <div className="modal-box w-full max-w-3xl">
+                            <div className="flex flex-col">
+                                <div className="divider divider-accent tracking-widest font-bold text-sm p-2">PRODUCT INFO</div>
+                                <table className="table table-zebra">
+                                    <thead>
+                                        <tr>
+                                            <th>SN</th>
+                                            <th>PRODUCT</th>
+                                            <th>COLOR</th>
+                                            <th>QTY</th>
+                                            <th>P VALUE</th>
+                                            <th>TOTAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {selectedInvoiceDetails.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{item.productName}</td>
+                                                <td>{item.color}</td>
+                                                <td>{item.qty.toLocaleString('en-IN')}</td>
+                                                <td>{item.pprice.toLocaleString('en-IN')}</td>
+                                                <td>{(item.qty * item.pprice).toLocaleString('en-IN')}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                    <tr className="font-semibold text-lg">
+                                        <td colSpan={2}></td>
+                                        <td>TOTAL</td>
+                                        <td>{(totalInvoiceQty).toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                        <td>{totalInvoicevalue.toLocaleString('en-IN')}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div className="modal-action">
+                                <button onClick={() => setShowModal(false)} className="btn btn-error btn-outline">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
