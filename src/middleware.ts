@@ -119,9 +119,13 @@ export default async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   // Find the roles that protect the current route
+  // const protectingRoles = (Object.keys(roleRouteMap) as UserRole[]).filter((role) =>
+  //   roleRouteMap[role].includes(path)
+  // );
   const protectingRoles = (Object.keys(roleRouteMap) as UserRole[]).filter((role) =>
-    roleRouteMap[role].includes(path)
+    roleRouteMap[role].some((route) => path.startsWith(route))
   );
+  
 
   const cookie = cookies().get('distcraft_session')?.value;
 
@@ -176,8 +180,5 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
    matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-  // matcher: ['/((?!api|_next).*)'],
-
-  //  matcher: ['/((?!.*\\.).*)'],
-};
+ };
 
