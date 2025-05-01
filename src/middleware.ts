@@ -119,13 +119,9 @@ export default async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   // Find the roles that protect the current route
-  // const protectingRoles = (Object.keys(roleRouteMap) as UserRole[]).filter((role) =>
-  //   roleRouteMap[role].includes(path)
-  // );
   const protectingRoles = (Object.keys(roleRouteMap) as UserRole[]).filter((role) =>
-    roleRouteMap[role].some((route) => path.startsWith(route))
+    roleRouteMap[role].includes(path)
   );
-  
 
   const cookie = cookies().get('distcraft_session')?.value;
 
