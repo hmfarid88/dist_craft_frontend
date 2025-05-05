@@ -57,25 +57,25 @@ const SrInfo = () => {
                     <div className="label">
                         <span className="label-text-alt">SR NAME</span>
                     </div>
-                    <input type="text" name="item" onChange={(e: any) => setSrName(e.target.value)} value={srName} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" name="name" onChange={(e: any) => setSrName(e.target.value)} value={srName} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text-alt">PHONE NUMBER</span>
                     </div>
-                    <input type="text" maxLength={11} name="item" onChange={(e: any) => setPhoneNumber(e.target.value.replace(/\D/g, ""))} value={phoneNumber} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" maxLength={11} name="phone" onChange={(e: any) => setPhoneNumber(e.target.value.replace(/\D/g, ""))} value={phoneNumber} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text-alt">ADDRESS</span>
                     </div>
-                    <input type="text" name="item" onChange={(e: any) => setAddress(e.target.value)} value={address} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" name="address" onChange={(e: any) => setAddress(e.target.value)} value={address} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text-alt">AREA</span>
                     </div>
-                    <input type="text" name="item" onChange={(e: any) => setArea(e.target.value)} value={area} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" name="area" onChange={(e: any) => setArea(e.target.value)} value={area} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <button onClick={submitSrInfo} disabled={pending} className="btn btn-outline btn-success">{pending ? "Submitting..." : "SUBMIT"}</button>

@@ -81,7 +81,7 @@ const Page = () => {
     }
     setPending(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/api/update-priceup?username=${username}&supplier=${supplier}&productName=${productName}&pprice=${pprice}&newSprice=${newSprice}`, {
+      const response = await fetch(`${apiBaseUrl}/api/update-priceup?username=${encodeURIComponent(username)}&supplier=${encodeURIComponent(supplier)}&productName=${encodeURIComponent(productName)}&pprice=${pprice}&newSprice=${newSprice}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ const Page = () => {
     }
     setPending(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/api/update-pricedrop?username=${username}&supplier=${supplier}&productName=${productName}&pprice=${pprice}&newPprice=${newPprice}&newSprice=${newSprice}&save=${selectedValue}`, {
+      const response = await fetch(`${apiBaseUrl}/api/update-pricedrop?username=${encodeURIComponent(username)}&supplier=${encodeURIComponent(supplier)}&productName=${encodeURIComponent(productName)}&pprice=${pprice}&newPprice=${newPprice}&newSprice=${newSprice}&save=${selectedValue}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
