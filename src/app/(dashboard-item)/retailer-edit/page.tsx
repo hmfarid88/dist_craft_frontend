@@ -21,7 +21,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!retailer) return;
-        fetch(`${apiBaseUrl}/payment/getRetailerInfoByRetailer?username=${username}&retailerName=${retailer}`)
+        fetch(`${apiBaseUrl}/payment/getRetailerInfoByRetailer?username=${encodeURIComponent(username)}&retailerName=${encodeURIComponent(retailer)}`)
             .then(response => response.json())
             .then(data => {
                 setId(data.id);
