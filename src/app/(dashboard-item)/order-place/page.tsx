@@ -276,7 +276,7 @@ const Page: React.FC = () => {
                         <div className="flex items-center justify-center w-full p-3">
                             <div className="overflow-x-auto max-h-96">
 
-                                <table className="table table-pin-rows">
+                                <table className="table table-xs font-bold">
                                     <thead>
                                         <tr>
                                             <th>SN</th>
@@ -290,14 +290,14 @@ const Page: React.FC = () => {
                                             <th>ACTION</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className='text-xs capitalize'>
                                         {saleProducts?.map((p, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td className="uppercase">{p.srname}</td>
-                                                <td className="uppercase">{p.area}</td>
-                                                <td className="uppercase">{p.retailer}</td>
-                                                <td className="uppercase">{p.productName} | {p.color} | {p.productno}</td>
+                                                <td className="max-w-[100px] break-words whitespace-normal">{p.srname}</td>
+                                                <td className="max-w-[100px] break-words whitespace-normal">{p.area}</td>
+                                                <td className="max-w-[100px] break-words whitespace-normal">{p.retailer}</td>
+                                                <td className="max-w-[500px] break-words whitespace-normal">{p.productName} | {p.color} | {p.productno}</td>
                                                 <td>{Number((p.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{p.qty}</td>
                                                 <td>{Number((p.sprice * p.qty).toFixed(2)).toLocaleString('en-IN')}</td>
@@ -317,9 +317,9 @@ const Page: React.FC = () => {
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td className="text-lg font-semibold">TOTAL</td>
-                                            <td className="text-lg font-semibold">{totalQty}</td>
-                                            <td className="text-lg font-semibold">{currency} {Number(total.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td className="font-semibold">TOTAL</td>
+                                            <td className="font-semibold">{totalQty}</td>
+                                            <td className="font-semibold">{currency} {Number(total.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td></td>
                                         </tr>
                                     </tfoot>
@@ -354,9 +354,9 @@ const Page: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="w-full pt-2">
-                                    <table className="table table-sm">
+                                    <table className="table table-xs">
                                         <thead>
-                                            <tr className='border-b-base-content text-xs md:text-md'>
+                                            <tr className='border-b-base-content text-xs'>
                                                 <th className='text-left p-0'>SN</th>
                                                 <th>SR NAME</th>
                                                 <th>AREA</th>
@@ -367,14 +367,14 @@ const Page: React.FC = () => {
                                                 <th>TOTAL</th>
                                             </tr>
                                         </thead>
-                                        <tbody className='text-xs md:text-md capitalize'>
+                                        <tbody className='text-xs capitalize'>
                                             {saleProducts?.map((p, index) => (
                                                 <tr key={index}>
                                                     <td>{index + 1}</td>
-                                                    <td className="uppercase">{p.srname}</td>
-                                                    <td className="uppercase">{p.area}</td>
-                                                    <td className="uppercase">{p.retailer}</td>
-                                                    <td className="uppercase">{p.productName} | {p.color} | {p.productno}</td>
+                                                    <td className="max-w-[100px] break-words whitespace-normal">{p.srname}</td>
+                                                    <td className="max-w-[100px] break-words whitespace-normal">{p.area}</td>
+                                                    <td className="max-w-[100px] break-words whitespace-normal">{p.retailer}</td>
+                                                    <td className="max-w-[300px] break-words whitespace-normal">{p.productName} | {p.color} | {p.productno}</td>
                                                     <td>{Number((p.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                                     <td>{p.qty}</td>
                                                     <td>{Number((p.sprice * p.qty).toFixed(2)).toLocaleString('en-IN')}</td>
@@ -398,7 +398,7 @@ const Page: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col w-full">
-                                    <div className="tracking-widest text-xs mt-1 mb-0">SIGNATURE</div>
+                                    <div className="tracking-widest text-xs mt-1 mb-0">Signature</div>
                                     <div className="mt-0 mb-0">-----------</div>
                                 </div>
 
