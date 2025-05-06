@@ -254,7 +254,7 @@ const Page: React.FC = () => {
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">PRODUCT NO</label>
                                     <textarea
-                                        className="textarea border bg-white text-black h-24 z-10 w-48"
+                                        className="textarea border border-slate-300 bg-white text-black h-24 z-10 w-48"
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                                             const rawValue = e.target.value.replace(/, /g, "").replace(/[^a-zA-Z0-9]/g, "");
                                             const formattedValue = rawValue.match(/.{1,15}/g)?.join(", ") || "";
