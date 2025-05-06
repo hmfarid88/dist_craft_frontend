@@ -143,7 +143,7 @@ const Purchase = () => {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/deleteBrand?username=${username}&brandItem=${brandDel}`, {
+      const response = await fetch(`${apiBaseUrl}/api/deleteBrand?username=${encodeURIComponent(username)}&brandItem=${encodeURIComponent(brandDel)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ const Purchase = () => {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/deleteSupplier?username=${username}&supplierItem=${supplierDel}`, {
+      const response = await fetch(`${apiBaseUrl}/api/deleteSupplier?username=${encodeURIComponent(username)}&supplierItem=${encodeURIComponent(supplierDel)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -267,7 +267,7 @@ const Purchase = () => {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/deleteProduct?username=${username}&productItem=${productDel}`, {
+      const response = await fetch(`${apiBaseUrl}/api/deleteProduct?username=${encodeURIComponent(username)}&productItem=${encodeURIComponent(productDel)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -329,7 +329,7 @@ const Purchase = () => {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/deleteColor?username=${username}&colorItem=${colorDel}`, {
+      const response = await fetch(`${apiBaseUrl}/api/deleteColor?username=${encodeURIComponent(username)}&colorItem=${encodeURIComponent(colorDel)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -431,7 +431,7 @@ const Purchase = () => {
 
   useEffect(() => {
     if (brand && productName) {
-      fetch(`${apiBaseUrl}/api/product/last-entry?username=${username}&brand=${brand}&productName=${productName}`)
+      fetch(`${apiBaseUrl}/api/product/last-entry?username=${encodeURIComponent(username)}&brand=${encodeURIComponent(brand)}&productName=${encodeURIComponent(productName)}`)
         .then((res) => res.json())
         .then((data) => {
           if (data) {
@@ -549,14 +549,14 @@ const Purchase = () => {
           </label>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text-alt">PURCHASE PRICE</span>
+              <span className="label-text-alt">PURCHASE PRICE / DP</span>
             </div>
             <input type="number" step="any" name="pprice" value={pprice} onChange={(e: any) => setPprice(e.target.value)} placeholder="Type here" className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black" required />
           </label>
 
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text-alt">SALE PRICE</span>
+              <span className="label-text-alt">SALE PRICE / RP</span>
             </div>
             <input type="number" step="any" name="rsale" value={sprice} onChange={(e: any) => setRsale(e.target.value)} placeholder="Type here" className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black" required />
           </label>

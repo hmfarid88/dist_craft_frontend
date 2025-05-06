@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity} from "@/app/store/orderlistSlice";
+import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/orderlistSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
@@ -17,14 +17,14 @@ const Page: React.FC = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const [date, setDate] = useState('');
     const [total, setTotal] = useState(0);
-   
+
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
 
     const [productOption, setProductOption] = useState<ProductOptionType[]>([]);
-   
+
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
     const saleProducts = useAppSelector((state) => state.orderlist.products);
@@ -35,9 +35,11 @@ const Page: React.FC = () => {
     const [area, setArea] = useState("");
     const [soldby, setSoldby] = useState("");
     const [productName, setProductName] = useState("");
+    const [productno, setProductno] = useState("");
     const [sprice, setSprice] = useState<number>(0);
     const [color, setColor] = useState('');
-    const [qty, setQty] = useState();
+    const [qty, setQty] = useState<number>(0);
+
 
     interface shopData {
         shopName: string,
@@ -45,7 +47,7 @@ const Page: React.FC = () => {
         address: string,
         email: string
     }
-    
+
     const [maxDate, setMaxDate] = useState("");
     useEffect(() => {
         const today = new Date();
@@ -66,7 +68,7 @@ const Page: React.FC = () => {
     }
     useEffect(() => {
         calculateTotal();
-             // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saleProducts]);
 
     const calculateTotal = () => {
@@ -75,24 +77,26 @@ const Page: React.FC = () => {
         }, 0);
         setTotal(total);
     };
-   
+
     const totalQty = saleProducts.reduce((sum: number, p) => {
         return sum + Number(p.qty);
-      }, 0);
-      
-      
-   
+    }, 0);
+
+
+
     const handleDeleteProduct = (id: any) => {
         dispatch(deleteProduct(id));
     };
     const addOrder = () => {
 
-        if (!soldby || !productName || !retailer || !color || !sprice || !qty) {
+        if (!soldby || !productName || !retailer || !color || !sprice || qty<1 || !productno) {
             toast.info("Sorry, Need all fields!");
             return;
         }
 
-        dispatch(addProducts({ id: uid(), date, retailer, productName, color, sprice: sprice, qty, srname: soldby, area, username }));
+        dispatch(addProducts({ id: uid(), date, retailer, productName, color, productno, sprice: sprice, qty, srname: soldby, area, username }));
+        setQty(0);
+        setProductno('');
     };
 
     useEffect(() => {
@@ -208,8 +212,8 @@ const Page: React.FC = () => {
                         <div className="flex pt-2 justify-between pb-0">
                             <input type="date" name="date" onChange={(e: any) => setDate(e.target.value)} max={maxDate} value={date} className="input input-ghost" />
                             {saleProducts[0]?.srname && (<div className="flex gap-10"> <button onClick={() => { const confirmed = window.confirm("Are you sure to delete all products?"); if (confirmed) { dispatch(deleteAllProducts(username)); } }} className="flex btn btn-ghost btn-square"><FcDeleteDatabase size={36} /></button>
-                            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button> 
-                            <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />
+                                <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                                <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />
                             </div>)}
                             <div className="avatar-group -space-x-6 rtl:space-x-reverse pr-5">
                                 <div className="avatar placeholder">
@@ -238,15 +242,28 @@ const Page: React.FC = () => {
                                     <label className="font-bold text-sm">PRODUCT NAME</label>
                                     <Select className="text-black w-full z-10" onChange={handleProductChange} options={productOption} />
                                 </div>
-                            </div>
-                            <div className="flex gap-2">
+
                                 <div className="flex flex-col w-full max-w-xs gap-2">
                                     <label className="font-bold text-sm">COLOR NAME</label>
                                     <Select className="text-black w-full z-10" name="pcolor" onChange={(selectedOption: any) => setColor(selectedOption.value)} options={colorOption} />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">QTY</label>
-                                    <input type="number" onChange={(e: any) => setQty(e.target.value)} className="input input-sm input-bordered bg-white text-black h-[38px] w-20 z-10" />
+                                    <input type="number" placeholder="0" onChange={(e: any) => setQty(e.target.value)} value={qty} className="input input-sm input-bordered bg-white text-black h-[38px] w-20 z-10" />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="font-bold text-sm">PRODUCT NO</label>
+                                    <textarea
+                                        className="textarea border bg-white text-black h-24 z-10 w-48"
+                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                                            const rawValue = e.target.value.replace(/, /g, "").replace(/[^a-zA-Z0-9]/g, "");
+                                            const formattedValue = rawValue.match(/.{1,15}/g)?.join(", ") || "";
+                                            setProductno(formattedValue);
+                                        }}
+                                        value={productno}
+                                        placeholder="Product No"
+                                    />
+
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">ADD</label>
@@ -280,7 +297,7 @@ const Page: React.FC = () => {
                                                 <td className="uppercase">{p.srname}</td>
                                                 <td className="uppercase">{p.area}</td>
                                                 <td className="uppercase">{p.retailer}</td>
-                                                <td className="uppercase">{p.productName} {p.color}</td>
+                                                <td className="uppercase">{p.productName} | {p.color} | {p.productno}</td>
                                                 <td>{Number((p.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{p.qty}</td>
                                                 <td>{Number((p.sprice * p.qty).toFixed(2)).toLocaleString('en-IN')}</td>
@@ -314,7 +331,7 @@ const Page: React.FC = () => {
                 </div>
                 {saleProducts[0]?.srname ? (
                     <div className="flex flex-col w-full p-2">
-                       
+
                         <div className="flex justify-center mb-5">
                             <div ref={contentToPrint} className="flex-1 max-w-[794px] h-auto p-4 border font-bold">
                                 <div className="flex w-full justify-between">
@@ -357,7 +374,7 @@ const Page: React.FC = () => {
                                                     <td className="uppercase">{p.srname}</td>
                                                     <td className="uppercase">{p.area}</td>
                                                     <td className="uppercase">{p.retailer}</td>
-                                                    <td className="uppercase">{p.productName} {p.color}</td>
+                                                    <td className="uppercase">{p.productName} | {p.color} | {p.productno}</td>
                                                     <td>{Number((p.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                                     <td>{p.qty}</td>
                                                     <td>{Number((p.sprice * p.qty).toFixed(2)).toLocaleString('en-IN')}</td>

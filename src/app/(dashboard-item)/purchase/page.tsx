@@ -18,7 +18,7 @@ const Page: React.FC = () => {
 
 
   return (
-    <div className="container-2xl">
+    <div className="container-2xl min-h-[calc(100vh-228px)]">
       <div className='card card-actions  p-3'>
         <div className="flex w-full justify-between">
           <a href="#my_modal_product_edit" className="btn btn-square btn-ghost"><FcAutomatic size={35} /></a>

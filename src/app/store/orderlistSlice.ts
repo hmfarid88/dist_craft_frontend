@@ -8,6 +8,7 @@ interface Product {
     retailer: string;
     productName: string;
     color: string;
+    productno: string;
     sprice: number;
     qty: number;
     srname: string;
