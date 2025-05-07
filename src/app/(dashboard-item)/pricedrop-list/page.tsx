@@ -69,6 +69,10 @@ const Page = () => {
     const totalSprice = filteredProducts.reduce((total, product) => {
         return total + product.newpprice;
     }, 0);
+
+    const totalAdjust = filteredProducts.reduce((total, product) => {
+        return total + (product.oldpprice - product.newpprice);
+    }, 0);
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
 
@@ -100,9 +104,9 @@ const Page = () => {
                                 <th>PRODUCT</th>
                                 <th>SUPPLIER</th>
                                 <th>PRODUCT NO</th>
-                                <th>OLD PURCHASE</th>
-                                <th>NEW PURCHASE</th>
-
+                                <th>OLD PURCHASE / DP</th>
+                                <th>NEW PURCHASE / DP</th>
+                                <th>ADJUST</th>
 
                             </tr>
                         </thead>
@@ -118,6 +122,7 @@ const Page = () => {
                                     <td>{product.productno}</td>
                                     <td>{product.oldpprice}</td>
                                     <td>{product.newpprice}</td>
+                                    <td>{product.oldpprice - product.newpprice}</td>
 
                                 </tr>
                             ))}
@@ -129,6 +134,7 @@ const Page = () => {
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number(totalAdjust.toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
                         </tfoot>
                     </table>

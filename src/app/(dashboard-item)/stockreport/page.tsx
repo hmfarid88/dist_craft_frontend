@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
+import Select from "react-select";
 
 interface Product {
   category: string;
@@ -72,6 +73,20 @@ const Page = () => {
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
   });
+  const options = updateable?.map(product => ({
+    value: {
+      supplier: product.supplier,
+      productName: product.productName,
+      pprice: product.pprice,
+    },
+    label: `${product.supplier}, ${product.productName}, ${product.pprice} (${product.qty})`
+  }));
+  const handleChange = (selectedOption: any) => {
+    const { supplier, productName, pprice } = selectedOption.value;
+    setSupplier(supplier);
+    setProductName(productName);
+    setPprice(pprice);
+  };
 
   const handlePriceup = async (e: any) => {
     e.preventDefault();
@@ -296,17 +311,8 @@ const Page = () => {
               <div className="label">
                 <span className="label-text-alt">PICK PRODUCT</span>
               </div>
-              <select className='select select-bordered' onChange={(e) => {
-                const [supplier, productName, pprice] = e.target.value.split("||");
-                setProductName(productName);
-                setSupplier(supplier);
-                setPprice(parseFloat(pprice));
-              }} >
-                <option selected disabled>Select . . .</option>
-                {updateable?.map((product, index) => (
-                  <option key={index} value={`${product.supplier}||${product.productName}||${product.pprice}`}>{product.supplier}, {product.productName}, {product.pprice} ({product.qty}) </option>
-                ))};
-              </select>
+            
+               <Select  className="text-black" options={options} onChange={handleChange} placeholder="Select . . ." />
             </label>
             <label className="form-control w-full max-w-xs">
               <div className="label">
@@ -322,7 +328,7 @@ const Page = () => {
               <>
                 <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text-alt">NEW PURCHASE PRICE</span>
+                    <span className="label-text-alt">NEW PURCHASE PRICE / DP</span>
                   </div>
                   <input
                     type="number"
@@ -334,7 +340,7 @@ const Page = () => {
                 </label>
                 <label className="form-control w-full max-w-xs">
                   <div className="label">
-                    <span className="label-text-alt">NEW SALE PRICE</span>
+                    <span className="label-text-alt">NEW SALE PRICE / RP</span>
                   </div>
                   <input type="number" value={newSprice} onChange={(e) => setNewSprice(e.target.value)} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
