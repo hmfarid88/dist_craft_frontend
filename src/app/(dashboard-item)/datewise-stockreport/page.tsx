@@ -3,9 +3,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from "react-to-print";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
+import { toast } from "react-toastify";
 
 interface Product {
     category: string;
@@ -23,19 +24,26 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const router=useRouter(); 
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
     const searchParams = useSearchParams();
     const date = searchParams.get('date');
+    const [selecteddate, setDate] = useState("");
 
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
-
+    const handleDatewise = (e: any) => {
+    if (!date) {
+      toast.info("No date selected!")
+      return;
+    }
+    router.push(`/datewise-stockreport?date=${selecteddate}`);
+  }
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/datewiseStockSummary?username=${username}&today=${date}`)
             .then(response => response.json())
@@ -86,6 +94,10 @@ const Page = () => {
 
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
+            <div className="flex items-center justify-center gap-2">
+                    <input type="date" onChange={(e: any) => setDate(e.target.value)} className="input btn-outline" />
+                    <button onClick={handleDatewise} className="btn btn-outline btn-square">GO</button>
+                </div>
             <div className="flex justify-between pl-5 pr-5 pt-5">
                 <label className="input input-bordered flex max-w-xs  items-center gap-2">
                     <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -93,6 +105,7 @@ const Page = () => {
                         <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                     </svg>
                 </label>
+                
                 <div className="flex gap-3">
                     <ExcelExportButton tableRef={contentToPrint} fileName="stock_summary" />
                     <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>

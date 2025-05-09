@@ -27,7 +27,7 @@ interface Product {
     saleDate: string;
     saleTime: string;
     invoice: string;
-    cName: string;
+    cname: string;
     phoneNumber: string;
     soldby: string;
 
@@ -79,7 +79,7 @@ const Page = () => {
                                     <tr><td>P Price</td><td>{product.pprice}</td></tr>
                                     <tr><td>S Price</td><td>{product.sprice}</td></tr>
                                     <tr><td>Supplier</td><td>{product.supplier}</td></tr>
-                                    <tr><td>S Invoice</td><td>{product.supplierInvoice}</td></tr>
+                                    <tr><td>S Invoice</td><td className="uppercase">{product.supplierInvoice}</td></tr>
                                     <tr><td>Stock Date</td><td>{product.entryDate}</td></tr>
                                     <tr><td>Stock Time</td><td>{product.entryDate}</td></tr>
                                     <tr><td>Status</td><td>{product.status}</td></tr>
@@ -89,8 +89,8 @@ const Page = () => {
                                             <tr><td>Sold Price</td><td>{product.soldprice}</td></tr>
                                             <tr><td>Own Discount</td><td>{product.discount}</td></tr>
                                             <tr><td>Company Offer</td><td>{product.offer}</td></tr>
-                                            <tr><td>Invoice</td><td>{product.invoice}</td></tr>
-                                            <tr><td>Customer</td><td>{product.cName} {product.phoneNumber}</td></tr>
+                                            <tr><td>Invoice</td><td className="uppercase">{product.invoice}</td></tr>
+                                            <tr><td>Customer</td><td>{product.cname}</td></tr>
                                             <tr><td>Sold By</td><td>{product.soldby}</td></tr>
                                             <tr><td>Sale Date</td><td>{product.saleDate}</td></tr>
                                             <tr><td>Sale Time</td><td>{product.saleTime}</td></tr>
