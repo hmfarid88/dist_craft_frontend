@@ -260,7 +260,7 @@ const Invoice = () => {
                         </div>
                     </div>
                     <div className="flex items-end justify-end capitalize pt-2"><p className='text-sm'>(In Words : {totalInWords})</p></div>
-                    <div className="flex flex-col pt-5 text-xs uppercase">
+                    <div className="flex flex-col pt-10 text-xs uppercase">
                         {allNotes?.map((item: any, index) => (
                             <tr key={index}>
                                 <td><p className='flex gap-2 text-left'> <FcAdvertising size={18} /> {item.note}</p></td>
