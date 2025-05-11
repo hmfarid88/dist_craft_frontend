@@ -89,7 +89,7 @@ const Page: React.FC = () => {
     };
     const addOrder = () => {
 
-        if (!soldby || !productName || !retailer || !color || !sprice || qty<1 || !productno) {
+        if (!soldby || !productName || !retailer || !color || !sprice || qty<1) {
             toast.info("Sorry, Need all fields!");
             return;
         }
@@ -254,7 +254,7 @@ const Page: React.FC = () => {
                                 <div className="flex flex-col gap-2">
                                     <label className="font-bold text-sm">PRODUCT NO</label>
                                     <textarea
-                                        className="textarea border border-slate-300 bg-white text-black h-24 z-10 w-48"
+                                        className="textarea border border-slate-300 bg-white text-black h-20 z-10 w-48"
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                                             const rawValue = e.target.value.replace(/, /g, "").replace(/[^a-zA-Z0-9]/g, "");
                                             const formattedValue = rawValue.match(/.{1,15}/g)?.join(", ") || "";
@@ -386,7 +386,7 @@ const Page: React.FC = () => {
                                 <div className="flex flex-col w-full">
                                     <div className="divider mt-0 mb-0"></div>
                                 </div>
-                                <div className="flex w-full gap-5 justify-end">
+                                <div className="flex w-full gap-5 justify-end pr-10">
                                     <div className="flex flex-col items-end">
                                         <p className='uppercase  text-xs md:text-md'>TOTAL :</p>
                                     </div>
