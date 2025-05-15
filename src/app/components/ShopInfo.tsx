@@ -62,7 +62,7 @@ const ShopInfo = () => {
                     <div className="label">
                         <span className="label-text-alt">PHONE NUMBER</span>
                     </div>
-                    <input type="text" maxLength={11} name="phone" onChange={(e: any) => setPhoneNumber(e.target.value.replace(/\D/g, ""))} value={phoneNumber} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" name="phone" onChange={(e: any) => setPhoneNumber(e.target.value)} value={phoneNumber} placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

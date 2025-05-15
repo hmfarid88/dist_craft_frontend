@@ -25,12 +25,11 @@ const Theme = () => {
             <select className="select select-accent w-36" value={theme} onChange={e => setTheme(e.target.value)}>
                 <option selected disabled>Theme</option>
                 <option value="corporate">Default</option>
-                <option value="system">Dark</option>
+                <option value="dark">Dark</option>
                 <option value="cupcake">Cupcake</option>
                 <option value="coffee">Coffee</option>
                 <option value="luxury">Luxury</option>
                 <option value="autumn">Autumn</option>
-                <option value="corporate">Corporate</option>
                 <option value="halloween">Halloween</option>
                 <option value="valentine">Valentine</option>
                 <option value="garden">Garden</option>

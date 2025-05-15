@@ -70,8 +70,8 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
-      (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.area.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+      (product.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+      (product.area?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
 
     );
     setFilteredProducts(filtered);
@@ -168,24 +168,6 @@ const Page = () => {
                   <th>AREA SUMMARY</th>
                 </tr>
               </thead>
-              {/* <tbody>
-                  {filteredProducts?.map((product, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td className="uppercase">{product?.retailerName}</td>
-                      <td className="uppercase">{product?.area}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.todayPreviousPayment.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal - product?.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal - product.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td><button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info"><CgDetailsMore size={18} /></button></td>
-
-                    </tr>
-                  ))}
-                </tbody> */}
               <tbody>
                 {Object.entries(areaGroups)?.map(([area, { products, totalCollection, totalDue }]) => {
                   return products.map((product, idx) => (
