@@ -91,6 +91,7 @@ const Page = () => {
         <div ref={contentToPrint} className="flex flex-col w-full items-center justify-center pt-5 pb-5">
           <div className="flex flex-col items-center justify-center">
             <h4 className='font-bold'>CASH BOOK</h4>
+            <h4 className='font-semibold uppercase'>{username}</h4>
             <h4 className='font-semibold'>{date}</h4>
           </div>
           <div className="overflow-x-auto">
