@@ -33,7 +33,7 @@ const Page = () => {
   const uname = useAppSelector((state) => state.username.username);
   const username = uname ? uname.username : 'Guest';
   const [pending, setPending] = useState(false);
-  const [productno, setProductno] = useState('');
+  
   const [supplier, setSupplier] = useState("");
   const [productName, setProductName] = useState("");
   const [pprice, setPprice] = useState(0);
@@ -61,14 +61,7 @@ const Page = () => {
   const handleRadioChange = (e: any) => {
     setSelectedValue(e.target.value);
   };
-  const handleProductEdit = () => {
-    if (!productno) {
-      toast.info("Product No Required!")
-      return;
-    }
-    router.push(`/product-edit?productno=${productno}`);
-
-  }
+ 
   const contentToPrint = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
@@ -292,17 +285,7 @@ const Page = () => {
       </div>
       <div className="modal sm:modal-middle" role="dialog" id="my_modal_stock">
         <div className="modal-box">
-          <div className="flex flex-col w-full">
-            <div className="divider divider-accent tracking-widest font-bold text-sm p-2">PRODUCT EDIT</div>
-          </div>
-          <div className="flex items-center justify-center">
-            <label className="form-control w-full max-w-xs pt-3">
-              <div className="flex items-center justify-between">
-                <input type="text" value={productno} name="colorItem" onChange={(e: any) => setProductno(e.target.value)} placeholder="Product No" className="input input-bordered w-3/4 max-w-xs" />
-                <button onClick={handleProductEdit} className="btn btn-square btn-success">GO</button>
-              </div>
-            </label>
-          </div>
+         
           <div className="flex flex-col w-full">
             <div className="divider divider-accent tracking-widest font-bold text-sm p-2">PRICE UPDATE</div>
           </div>

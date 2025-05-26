@@ -266,7 +266,7 @@ const Page: React.FC = () => {
 
         <div className="flex items-center gap-2 justify-center">
           <Select
-            className="text-black w-64 md:w-96 z-50"
+            className="text-black w-64 md:w-96 z-10"
             ref={selectRef}
             autoFocus={true}
             value={selectedProidOption}
@@ -404,11 +404,7 @@ const Page: React.FC = () => {
               <span className="text-sm">TOTAL</span>
               <p>{Number((total + vatAmount).toFixed(2)).toLocaleString('en-IN')}</p>
             </label>
-            {/* <label className="input input-bordered flex items-center gap-2">
-              <FaCcMastercard size={20} />
-              <input type="number" className="grow w-[150px]" onChange={(e: any) => setCard(e.target.value)} placeholder="Card Payment" />
-            </label> */}
-
+         
           </div>
         </div>
         <div className="flex w-full justify-center p-5">
@@ -424,23 +420,6 @@ const Page: React.FC = () => {
           </div>
         </div>
 
-        {/* <div className="flex w-full justify-center p-5">
-          <div className="card shadow shadow-slate-500 max-w-lg gap-3 p-2">
-            <h1 className="font-bold text-sm">PAYMENT INFO</h1>
-            <label className="input input-bordered flex w-full max-w-xs items-center gap-2">
-              <div className="text-lg">{currency}</div>
-              <input type="text" className="grow w-[150px]" value={Number((total + vatAmount).toFixed(2)).toLocaleString('en-IN')} placeholder="Total Amount" readOnly />
-            </label>
-            <label className="input input-bordered flex w-full max-w-xs items-center gap-2">
-              <FaHandHoldingMedical size={20} />
-              <input type="number" className="grow w-[150px]" value={received} onChange={handleReceivedChange} placeholder="Received" />
-            </label>
-            <label className="input input-bordered flex w-full max-w-xs items-center gap-2">
-              <RiHandCoinLine size={20} />
-              <input type="text" className="grow w-[150px]" value={returnAmount.toFixed(2)} placeholder="Return" readOnly />
-            </label>
-          </div>
-        </div> */}
         <div className="flex w-full justify-center p-2">
           <div className="card items-center justify-center gap-3 p-2">
             <label className="font-bold">SUBMIT</label>

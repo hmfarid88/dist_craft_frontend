@@ -18,6 +18,7 @@ import { TbTruckReturn } from 'react-icons/tb'
 import { FaUsers } from "react-icons/fa6";
 import RetailerInfo from '@/app/components/RetailerInfo'
 import SrInfo from '@/app/components/SrInfo'
+import ProductEdit from '@/app/components/ProductEdit'
 
 const Page = () => {
 
@@ -112,6 +113,14 @@ const Page = () => {
                                 <div className="collapse-title text-sm font-medium">SALE RETURN</div>
                                 <div className="collapse-content">
                                     <SaleReturn />
+                                </div>
+                            </div>
+                            <div className="collapse collapse-arrow bg-base-200">
+                                {/* <input type="radio" name="my-accordion-2" /> */}
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">PRODUCT EDIT</div>
+                                <div className="collapse-content">
+                                    <ProductEdit />
                                 </div>
                             </div>
                         </div>

@@ -219,6 +219,15 @@ const Invoice = () => {
                                     </tr>
                                 ))}
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td className='text-left p-0'>TOTAL</td>
+                                    <td>{invoiceData?.length}</td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div className="flex flex-col w-full">
