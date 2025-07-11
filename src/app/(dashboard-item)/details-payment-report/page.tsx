@@ -109,7 +109,7 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product?.date}</td>
-                                            <td className="capitalize">{product?.note}</td>
+                                            <td className="capitalize max-w-[150px] break-words">{product?.note}</td>
                                             <td>{Number((product?.payment)?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number((product?.receive)?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>

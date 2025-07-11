@@ -117,7 +117,7 @@ const Page = () => {
                                             <td>{product.date}</td>
                                             <td>{product.retailerName}</td>
                                             <td>{product.paymentType}</td>
-                                            <td>{product.note}</td>
+                                            <td className="max-w-[150px] break-words">{product.note}</td>
                                             <td>{Number(product.amount.toFixed(2)).toLocaleString('en-IN')}</td>
                                             {/* <td><button onClick={() => handleEdit(product.id)} className="btn btn-primary btn-xs"><MdOutlineEditNote size={24} /></button></td> */}
                                         </tr>

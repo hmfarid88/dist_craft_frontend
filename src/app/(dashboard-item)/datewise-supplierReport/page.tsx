@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import CurrentDate from "@/app/components/CurrentDate";
 import { useSearchParams } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
@@ -32,21 +31,22 @@ const Page = () => {
 
     const searchParams = useSearchParams();
     const supplierName = searchParams.get('supplierName');
-    const date = searchParams.get('date');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/payment/getDatewiseSupplier-details?username=${encodeURIComponent(username)}&supplierName=${encodeURIComponent(supplierName ?? "")}&date=${encodeURIComponent(date ?? "")}`)
+        fetch(`${apiBaseUrl}/payment/getDatewiseSupplier-details?username=${username}&supplierName=${supplierName}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, supplierName, date]);
+    }, [apiBaseUrl, username, supplierName, startDate, endDate]);
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -105,7 +105,7 @@ const Page = () => {
                         <CompanyInfo />
                         <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DETAILS SUPPLIER</h4>
                             <h4 className="uppercase">Supplier: {supplierName}</h4>
-                            <CurrentDate /></div>
+                            <h4>Date: {startDate} TO {endDate}</h4></div>
                         <table className="table table-sm">
                             <thead className="sticky top-16 bg-base-100">
                                 <tr>
@@ -132,8 +132,8 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
-                                            <td className="uppercase">{product.invoice}</td>
-                                            <td className="uppercase">{product?.note}</td>
+                                            <td className="uppercase break-words max-w-[150px]">{product.invoice}</td>
+                                            <td className="uppercase break-words max-w-[150px]">{product?.note}</td>
                                             <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.svalue.toFixed(2)).toLocaleString('en-IN')}</td>

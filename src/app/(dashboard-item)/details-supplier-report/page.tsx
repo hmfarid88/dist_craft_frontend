@@ -46,6 +46,32 @@ const Page = () => {
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [selectedInvoiceDetails, setSelectedInvoiceDetails] = useState<modatProduct[]>([]);
     const [showModal, setShowModal] = useState(false);
+    
+      const [maxDate, setMaxDate] = useState('');
+      
+      useEffect(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        setMaxDate(formattedDate);
+      }, []);
+    
+      const [startDate, setStartDate] = useState("");
+      const [endDate, setEndDate] = useState("");
+    
+      const handleSubmit = (e: any) => {
+        e.preventDefault();
+        if (!startDate || !endDate) {
+          toast.warning("Start date and end date required !");
+          return;
+        }
+        // Use the dynamic routePath for navigation
+        router.push(`/datewise-supplierReport?supplierName=${supplierName}&startDate=${startDate}&endDate=${endDate}`);
+        setStartDate("");
+        setEndDate("");
+      };
     useEffect(() => {
         fetch(`${apiBaseUrl}/payment/getSupplierBalance-details?username=${encodeURIComponent(username)}&supplierName=${encodeURIComponent(supplierName ?? "")}`)
             .then(response => response.json())
@@ -55,14 +81,7 @@ const Page = () => {
             })
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, supplierName]);
-    const handleDatewise = (e: any) => {
-        if (!date) {
-            toast.info("No date selected!")
-            return;
-        }
-        router.push(`/datewise-supplierReport?username=${username}&supplierName=${supplierName}&date=${date}`);
-    }
-
+   
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
 
@@ -121,7 +140,44 @@ const Page = () => {
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full  min-h-[calc(100vh-228px)] items-center justify-center p-4">
+            <div className="flex p-5">
+                <div className='flex gap-3'>
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text-alt">START DATE</span>
+        </div>
+        <input 
+          type="date" 
+          name="date" 
+          onChange={(e: any) => setStartDate(e.target.value)} 
+          max={maxDate} 
+          value={startDate} 
+          className="input input-bordered" 
+        />
+      </label>
 
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text-alt">END DATE</span>
+        </div>
+        <input 
+          type="date" 
+          name="date" 
+          onChange={(e: any) => setEndDate(e.target.value)} 
+          max={maxDate} 
+          value={endDate} 
+          className="input input-bordered" 
+        />
+      </label>
+
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text-alt">SEARCH</span>
+        </div>
+        <button onClick={handleSubmit} className='btn btn-success'>{'>>'}</button>
+      </label>
+    </div>
+            </div>
                 <div className="flex w-full justify-between p-5">
                     <label className="input input-bordered flex max-w-xs  items-center gap-2">
                         <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -129,10 +185,7 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
-                    <div className="flex gap-2">
-                        <input type="date" onChange={(e: any) => setDate(e.target.value)} className="input btn-outline" />
-                        <button onClick={handleDatewise} className="btn btn-outline btn-square">GO</button>
-                    </div>
+                  
                     <div className="flex gap-2">
                         <ExcelExportButton tableRef={contentToPrint} fileName="details_supplier_ledger" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
@@ -170,8 +223,8 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
-                                            <td><button onClick={() => handleInvoiceClick(product.invoice)} className="btn btn-ghost btn-sm uppercase">{product.invoice}</button></td>
-                                            <td className="uppercase">{product?.note}</td>
+                                            <td><button onClick={() => handleInvoiceClick(product.invoice)} className="btn btn-ghost btn-sm uppercase break-words max-w-[150px]">{product.invoice}</button></td>
+                                            <td className="uppercase break-words max-w-[150px]">{product?.note}</td>
                                             <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.svalue.toFixed(2)).toLocaleString('en-IN')}</td>

@@ -101,7 +101,7 @@ const Page = () => {
                                         <td>{index + 1}</td>
                                         <td>{product.date}</td>
                                         <td>{product.expenseName}</td>
-                                        <td>{product.expenseNote}</td>
+                                        <td className="max-w-[150px] break-words">{product.expenseNote}</td>
                                         <td>{Number(product.amount.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>
                                 ))}

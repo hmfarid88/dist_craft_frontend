@@ -81,7 +81,7 @@ const Page = () => {
                                     <tr><td>Supplier</td><td>{product.supplier}</td></tr>
                                     <tr><td>S Invoice</td><td className="uppercase">{product.supplierInvoice}</td></tr>
                                     <tr><td>Stock Date</td><td>{product.entryDate}</td></tr>
-                                    <tr><td>Stock Time</td><td>{product.entryDate}</td></tr>
+                                    <tr><td>Stock Time</td><td>{product.entryTime}</td></tr>
                                     <tr><td>Status</td><td>{product.status}</td></tr>
                                     {product.status === 'sold' && (
                                         <>

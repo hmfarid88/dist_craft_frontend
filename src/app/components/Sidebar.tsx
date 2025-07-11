@@ -77,7 +77,7 @@ export const Sidebar = () => {
                             <summary><MdOutlinePayments size={20} /> PAYMENT REPORT</summary>
                             <ul>
                                 <li><Link href="/expense-report"> EXPENSE REPORT</Link></li>
-                                <li><Link href="/payment-report"> PAYMENT REPORT</Link></li>
+                                <li><Link href="/payment-report"> PAY-RECV REPORT</Link></li>
                                 <li><Link href="/retailer-pay-report"> RETAILER PAYMENT</Link></li>
                             </ul>
                         </details>
