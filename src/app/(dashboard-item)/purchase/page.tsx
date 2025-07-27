@@ -3,7 +3,7 @@ import Purchase from "@/app/components/Purchase";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FcAutomatic, FcPlus } from "react-icons/fc";
-import { toast } from "react-toastify";
+import { toast} from "react-toastify";
 
 const Page: React.FC = () => {
   const [productno, setProductno] = useState('');
@@ -49,7 +49,6 @@ const Page: React.FC = () => {
           </div>
         </div>
       </div>
-
     </div>
   )
 }

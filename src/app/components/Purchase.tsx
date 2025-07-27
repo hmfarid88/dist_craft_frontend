@@ -5,7 +5,7 @@ import Select from "react-select";
 import { uid } from "uid";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSlice";
-import { toast } from 'react-toastify';
+import { toast} from 'react-toastify';
 import { FcPlus } from "react-icons/fc";
 
 const Purchase = () => {
@@ -785,6 +785,7 @@ const Purchase = () => {
           </div>
         </div>
       </div>
+      
     </div>
   )
 }

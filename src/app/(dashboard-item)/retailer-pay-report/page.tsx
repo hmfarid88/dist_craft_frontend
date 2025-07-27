@@ -18,7 +18,6 @@ type Product = {
     paymentType: string;
     note: string;
     amount: number;
-
 };
 
 
