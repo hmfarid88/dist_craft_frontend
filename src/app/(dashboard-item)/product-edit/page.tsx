@@ -31,7 +31,7 @@ const Page = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${apiBaseUrl}/api/products/not-in-sales?username=${username}&productno=${productno}`)
+        fetch(`${apiBaseUrl}/api/products/not-in-sales?username=${encodeURIComponent(username)}&productno=${encodeURIComponent(productno ?? '')}`)
             .then(response => response.json())
             .then(data => {
                 setEditableProduct(data[0] || null);
