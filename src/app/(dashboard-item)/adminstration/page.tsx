@@ -21,7 +21,6 @@ import SrInfo from '@/app/components/SrInfo'
 import ProductEdit from '@/app/components/ProductEdit'
 
 const Page = () => {
-
     const searchParams = useSearchParams();
     const access = searchParams.get('access');
     const [isAuthorized, setIsAuthorized] = useState(false);
