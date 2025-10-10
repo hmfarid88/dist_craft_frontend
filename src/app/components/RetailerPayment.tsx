@@ -46,7 +46,7 @@ const RetailerPayment = () => {
   }
   const handleRetailerSubmit = async (e: any) => {
     e.preventDefault();
-    if (!retailerName || !retailerNote || !retailerAmount) {
+    if (!date || !retailerName || !paymentType || !retailerNote || !retailerAmount) {
       toast.warning("Item is empty !");
       return;
     }
