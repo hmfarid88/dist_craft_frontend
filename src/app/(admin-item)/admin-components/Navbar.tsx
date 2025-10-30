@@ -24,7 +24,7 @@ const Navbar = () => {
                             <li><Link href="/admin-dashboard">HOME</Link></li>
                             <li><Link href="/adduser">ADD USER</Link></li>
                             <li><Link href="/addadmin">ADD ADMIN USER</Link></li>
-                            <li><Link href="/addadmin">SMS SERVICE</Link></li>
+                            <li><Link href="/sms-service">SMS SERVICE</Link></li>
                             <li><Link href="/user-pass">USER PASSWORD</Link></li>
                         </ul>
                     </div>
