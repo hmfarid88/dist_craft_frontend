@@ -76,6 +76,7 @@ const Expense = () => {
           <option value="Office Cost">Office Cost</option>
           <option value="Employee Salary">Employee Salary</option>
           <option value="Shop Rent">Shop Rent</option>
+          <option value="RPDP">RPDP</option>
           <option value="Others">Others</option>
         </select>
 
