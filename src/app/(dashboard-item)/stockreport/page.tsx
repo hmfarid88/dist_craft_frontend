@@ -33,7 +33,7 @@ const Page = () => {
   const uname = useAppSelector((state) => state.username.username);
   const username = uname ? uname.username : 'Guest';
   const [pending, setPending] = useState(false);
-  
+
   const [supplier, setSupplier] = useState("");
   const [productName, setProductName] = useState("");
   const [pprice, setPprice] = useState(0);
@@ -61,7 +61,7 @@ const Page = () => {
   const handleRadioChange = (e: any) => {
     setSelectedValue(e.target.value);
   };
- 
+
   const contentToPrint = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
@@ -244,7 +244,7 @@ const Page = () => {
                 <th>DP AMOUNT</th>
               </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {filteredProducts?.map((product, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
@@ -264,6 +264,28 @@ const Page = () => {
 
                 </tr>
               ))}
+            </tbody> */}
+            <tbody>
+              {filteredProducts
+                ?.filter(product => (product.countBeforeToday + product.countToday - product.saleToday) !== 0)
+                .map((product, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{product.category}</td>
+                    <td>{product.brand}</td>
+                    <td>{product.productName}</td>
+                    <td>{product.color}</td>
+                    <td>{product.countBeforeToday}</td>
+                    <td>{product.countToday}</td>
+                    <td>{product.countBeforeToday + product.countToday}</td>
+                    <td>{product.saleToday}</td>
+                    <td>{(product.countBeforeToday + product.countToday) - product.saleToday}</td>
+                    <td>{Number((product.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                    <td>{Number((((product.countBeforeToday + product.countToday) - product.saleToday) * product.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                    <td>{Number((product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                    <td>{Number((((product.countBeforeToday + product.countToday) - product.saleToday) * product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
+                  </tr>
+                ))}
             </tbody>
             <tfoot>
               <tr className="font-bold text-sm">
@@ -285,7 +307,7 @@ const Page = () => {
       </div>
       <div className="modal sm:modal-middle" role="dialog" id="my_modal_stock">
         <div className="modal-box">
-         
+
           <div className="flex flex-col w-full">
             <div className="divider divider-accent tracking-widest font-bold text-sm p-2">PRICE UPDATE</div>
           </div>
@@ -294,8 +316,8 @@ const Page = () => {
               <div className="label">
                 <span className="label-text-alt">PICK PRODUCT</span>
               </div>
-            
-               <Select  className="text-black" options={options} onChange={handleChange} placeholder="Select . . ." />
+
+              <Select className="text-black" options={options} onChange={handleChange} placeholder="Select . . ." />
             </label>
             <label className="form-control w-full max-w-xs">
               <div className="label">
