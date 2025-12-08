@@ -8,6 +8,7 @@ import DateToDate from "@/app/components/DateToDate";
 import Link from "next/link";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
+import { useRouter } from "next/navigation";
 
 interface Product {
   cname: string;
@@ -37,7 +38,8 @@ const Page = () => {
   const [soldProducts, setSoldProducts] = useState<Product[]>([]);
   const [filterCriteria, setFilterCriteria] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [groupByProduct, setGroupByProduct] = useState(false);  //added for group
+  const [groupByProduct, setGroupByProduct] = useState(false);  
+  const router = useRouter();
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/getProductSale?username=${username}`)
@@ -48,7 +50,10 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
-
+  
+  const findInvoice = (cid: string) => {
+    router.push(`/invoice?cid=${cid}`);
+  };
   //added for group
   const groupedProducts = groupByProduct
     ? Object.values(
@@ -202,7 +207,7 @@ const Page = () => {
                     <th>{index + 1}</th>
                     <td>{product.date}</td>
                     <td>{product.time}</td>
-                    <td className="uppercase">{product.cid}</td>
+                    <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
                     <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
                     <td className="capitalize">{product.soldby}</td>
                     <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>

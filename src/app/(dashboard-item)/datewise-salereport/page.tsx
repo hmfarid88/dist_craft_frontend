@@ -4,7 +4,7 @@ import { useAppSelector } from "@/app/store";
 import { useReactToPrint } from "react-to-print";
 import { FcCalendar, FcPrint } from "react-icons/fc";
 import DateToDate from "@/app/components/DateToDate";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
@@ -30,7 +30,10 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const router = useRouter();
+    const findInvoice = (cid: string) => {
+        router.push(`/invoice?cid=${cid}`);
+    };
     const searchParams = useSearchParams();
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -134,7 +137,7 @@ const Page = () => {
                                     <th>{index + 1}</th>
                                     <td>{product.date}</td>
                                     <td>{product.time}</td>
-                                    <td className="uppercase">{product.cid}</td>
+                                     <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
                                     <td className="capitalize">{product.cname}, {product.phoneNumber} {product.address}</td>
                                     <td className="capitalize">{product.soldby}</td>
                                     <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
