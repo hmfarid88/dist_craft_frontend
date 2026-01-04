@@ -1,7 +1,7 @@
 'use client'
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/orderlistSlice";
+import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity, removeSingleProductNo } from "@/app/store/orderlistSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
@@ -22,7 +22,7 @@ const Page: React.FC = () => {
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
-
+    const [filterCriteria, setFilterCriteria] = useState('');
     const [productOption, setProductOption] = useState<ProductOptionType[]>([]);
 
     const uname = useAppSelector((state) => state.username.username);
@@ -66,30 +66,52 @@ const Page: React.FC = () => {
         label: string;
         sprice: number;
     }
+
+    const filteredProducts = useMemo(() => {
+        if (!filterCriteria) return saleProducts;
+
+        const search = filterCriteria.toLowerCase();
+
+        return saleProducts.filter((p) =>
+            p.srname?.toLowerCase().includes(search) ||
+            p.area?.toLowerCase().includes(search) ||
+            p.retailer?.toLowerCase().includes(search) ||
+            p.productName?.toLowerCase().includes(search) ||
+            p.color?.toLowerCase().includes(search) ||
+            p.productno?.toLowerCase().includes(search)
+        );
+    }, [saleProducts, filterCriteria]);
+
+
+    const handleFilterChange = (e: any) => {
+        setFilterCriteria(e.target.value);
+    };
     useEffect(() => {
         calculateTotal();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [saleProducts]);
+    }, [filteredProducts]);
 
     const calculateTotal = () => {
-        const total = saleProducts.reduce((sum, p) => {
+        const total = filteredProducts.reduce((sum, p) => {
             return sum + ((p.sprice * p.qty));
         }, 0);
         setTotal(total);
     };
 
-    const totalQty = saleProducts.reduce((sum: number, p) => {
+    const totalQty = filteredProducts.reduce((sum: number, p) => {
         return sum + Number(p.qty);
     }, 0);
 
-
+const handleDeleteProductNo = (productId: string, productNo: string) => {
+  dispatch(removeSingleProductNo({ productId, productNo }));
+};
 
     const handleDeleteProduct = (id: any) => {
         dispatch(deleteProduct(id));
     };
     const addOrder = () => {
 
-        if (!soldby || !productName || !retailer || !color || !sprice || qty<1) {
+        if (!soldby || !productName || !retailer || !color || !sprice || qty < 1) {
             toast.info("Sorry, Need all fields!");
             return;
         }
@@ -110,7 +132,6 @@ const Page: React.FC = () => {
                         uniqueProductsMap.set(item.productName, item);
                     }
                 });
-
                 const transformedData = Array.from(uniqueProductsMap.values()).map((item: any) => ({
                     id: item.proId,
                     value: item.productName,
@@ -214,6 +235,12 @@ const Page: React.FC = () => {
                             {saleProducts[0]?.srname && (<div className="flex gap-10"> <button onClick={() => { const confirmed = window.confirm("Are you sure to delete all products?"); if (confirmed) { dispatch(deleteAllProducts(username)); } }} className="flex btn btn-ghost btn-square"><FcDeleteDatabase size={36} /></button>
                                 <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                                 <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />
+                                <label className="input input-bordered flex max-w-xs  items-center gap-2">
+                                    <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 opacity-70">
+                                        <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
+                                    </svg>
+                                </label>
                             </div>)}
                             <div className="avatar-group -space-x-6 rtl:space-x-reverse pr-5">
                                 <div className="avatar placeholder">
@@ -284,6 +311,7 @@ const Page: React.FC = () => {
                                             <th>AREA</th>
                                             <th>RETAILER NAME</th>
                                             <th>DESCRIPTION</th>
+                                            <th>PRODUCT NO</th>
                                             <th>PRICE</th>
                                             <th>QTY</th>
                                             <th>TOTAL</th>
@@ -291,13 +319,33 @@ const Page: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody className='text-xs capitalize'>
-                                        {saleProducts?.map((p, index) => (
+                                        {filteredProducts?.map((p, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
                                                 <td className="max-w-[100px] break-words whitespace-normal">{p.srname}</td>
                                                 <td className="max-w-[100px] break-words whitespace-normal">{p.area}</td>
                                                 <td className="max-w-[100px] break-words whitespace-normal">{p.retailer}</td>
-                                                <td className="max-w-[500px] break-words whitespace-normal">{p.productName} | {p.color} | {p.productno}</td>
+                                                <td className="max-w-[500px] break-words whitespace-normal">{p.productName} | {p.color}</td>
+                                                <td className="max-w-[500px] whitespace-normal">
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {p.productno
+                                                            ?.split(",")
+                                                            .map(no => no.trim())
+                                                            .map((no, i) => (
+                                                                <span key={i} className="badge badge-outline gap-1">
+                                                                    {no}
+                                                                    <button
+                                                                        onClick={() => handleDeleteProductNo(p.id, no)}
+                                                                        className="text-error"
+                                                                    >
+                                                                        <RxCrossCircled size={14} />
+                                                                    </button>
+                                                                </span>
+                                                            ))}
+                                                    </div>
+                                                </td>
+
+
                                                 <td>{Number((p.sprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{p.qty}</td>
                                                 <td>{Number((p.sprice * p.qty).toFixed(2)).toLocaleString('en-IN')}</td>
@@ -317,6 +365,7 @@ const Page: React.FC = () => {
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            <td></td>
                                             <td className="font-semibold">TOTAL</td>
                                             <td className="font-semibold">{totalQty}</td>
                                             <td className="font-semibold">{currency} {Number(total.toFixed(2)).toLocaleString('en-IN')}</td>
@@ -329,7 +378,7 @@ const Page: React.FC = () => {
                     </div>
 
                 </div>
-                {saleProducts[0]?.srname ? (
+                {filteredProducts[0]?.srname ? (
                     <div className="flex flex-col w-full p-2">
 
                         <div className="flex justify-center mb-5">
@@ -368,7 +417,7 @@ const Page: React.FC = () => {
                                             </tr>
                                         </thead>
                                         <tbody className='text-xs capitalize'>
-                                            {saleProducts?.map((p, index) => (
+                                            {filteredProducts?.map((p, index) => (
                                                 <tr key={index}>
                                                     <td>{index + 1}</td>
                                                     <td className="max-w-[100px] break-words whitespace-normal">{p.srname}</td>

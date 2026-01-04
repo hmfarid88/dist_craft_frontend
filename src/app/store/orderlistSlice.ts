@@ -29,7 +29,7 @@ export const orderListSlice = createSlice({
     reducers: {
 
         addProducts: (state, action: PayloadAction<Product>) => {
-            const exist = state.products.find((pro) => pro.username === action.payload.username && pro.retailer=== action.payload.retailer && pro.productName === action.payload.productName && pro.color===action.payload.color)
+            const exist = state.products.find((pro) => pro.username === action.payload.username && pro.retailer === action.payload.retailer && pro.productName === action.payload.productName && pro.color === action.payload.color)
             if (exist) {
                 exist.qty = Number(exist.qty) + Number(action.payload.qty);
             } else {
@@ -49,6 +49,31 @@ export const orderListSlice = createSlice({
             state.products = state.products.filter((product) => product.username !== username);
         },
 
+        removeSingleProductNo: (state, action) => {
+            const { productId, productNo } = action.payload;
+
+            const product = state.products.find(p => p.id === productId);
+            if (!product || !product.productno) return;
+
+            // split string → array
+            let productNos = product.productno
+                .split(",")
+                .map(no => no.trim())
+                .filter(no => no !== productNo);
+
+            // update string
+            product.productno = productNos.join(", ");
+
+            // update qty
+            product.qty = productNos.length;
+
+            // remove row if qty is zero
+            if (product.qty === 0) {
+                state.products = state.products.filter(p => p.id !== productId);
+            }
+        },
+
+
         updateAllSrAndArea: (state, action) => {
             const { srname, area } = action.payload;
             state.products = state.products.map(product => ({
@@ -63,10 +88,10 @@ export const orderListSlice = createSlice({
 })
 export const selectTotalQuantity = createSelector(
     (state: { orderlist: orderListState }) => state.orderlist.products,
-    (products) => products.reduce((total, product) =>Number (total) + Number(product.qty), 0)
+    (products) => products.reduce((total, product) => Number(total) + Number(product.qty), 0)
 );
 
 
-export const { addProducts, deleteProduct, deleteAllProducts, updateAllSrAndArea } = orderListSlice.actions;
+export const { addProducts, deleteProduct, deleteAllProducts, updateAllSrAndArea, removeSingleProductNo } = orderListSlice.actions;
 
 export default orderListSlice.reducer;
