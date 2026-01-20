@@ -4,6 +4,8 @@ import usernameReducer from "../store/usernameSlice";
 import productsaleReducer from "../store/productSaleSlice";
 import vendorSaleReducer from "../store/vendorSaleSlice";
 import orderListReducer from "../store/orderlistSlice";
+import srorderReducer from "../store/srorderSlice";
+import srfinalorderReducer from "../store/srfinalorderSlice";
 import {
   persistReducer,
   persistStore,
@@ -19,12 +21,16 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 
 
+
+
 const rootReducer = combineReducers({
   products: productReducer,
   username: usernameReducer,
   productTosale: productsaleReducer,
   vendorSale: vendorSaleReducer,
-  orderlist: orderListReducer
+  orderlist: orderListReducer,
+  srOrder: srorderReducer,
+  srFinalOrder:srfinalorderReducer,
 });
 
 const persistConfig = {

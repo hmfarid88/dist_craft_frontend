@@ -12,6 +12,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { AiOutlineMail } from "react-icons/ai";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
+import Link from "next/link";
 
 const Page: React.FC = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -81,7 +82,6 @@ const Page: React.FC = () => {
             p.productno?.toLowerCase().includes(search)
         );
     }, [saleProducts, filterCriteria]);
-
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
@@ -232,6 +232,7 @@ const handleDeleteProductNo = (productId: string, productNo: string) => {
                     <div className="flex flex-col">
                         <div className="flex pt-2 justify-between pb-0">
                             <input type="date" name="date" onChange={(e: any) => setDate(e.target.value)} max={maxDate} value={date} className="input input-ghost" />
+                            <Link href="/sr-order"><button className="btn btn-outline">SR ORDER</button></Link>
                             {saleProducts[0]?.srname && (<div className="flex gap-10"> <button onClick={() => { const confirmed = window.confirm("Are you sure to delete all products?"); if (confirmed) { dispatch(deleteAllProducts(username)); } }} className="flex btn btn-ghost btn-square"><FcDeleteDatabase size={36} /></button>
                                 <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                                 <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />

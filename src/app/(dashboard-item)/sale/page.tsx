@@ -3,19 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, updateSprice, updateDiscount, updateOffer, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSaleSlice";
+import { deleteProductByProId } from "@/app/store/srfinalorderSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
-import { FcManager } from "react-icons/fc";
-import { FcPhone } from "react-icons/fc";
-import { FcViewDetails } from "react-icons/fc";
-import { FaCcMastercard } from "react-icons/fa6";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { HiOutlineReceiptTax } from "react-icons/hi";
 import { RxCrossCircled } from "react-icons/rx";
-import { FaHandHoldingMedical } from "react-icons/fa";
-import { RiHandCoinLine } from "react-icons/ri";
-
 
 const Page: React.FC = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -150,6 +144,15 @@ const Page: React.FC = () => {
       setAddress("");
       setSoldby("");
       setReceived('');
+
+      productInfo.forEach((item: any) => {
+        dispatch(
+          deleteProductByProId({
+            proId: item.proId,
+            username,
+          })
+        );
+      });
 
       dispatch(deleteAllProducts(username));
       router.push(`/invoice?cid=${cid}`);
@@ -404,7 +407,7 @@ const Page: React.FC = () => {
               <span className="text-sm">TOTAL</span>
               <p>{Number((total + vatAmount).toFixed(2)).toLocaleString('en-IN')}</p>
             </label>
-         
+
           </div>
         </div>
         <div className="flex w-full justify-center p-5">

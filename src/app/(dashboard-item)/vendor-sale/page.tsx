@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/vendorSaleSlice";
+import { deleteProductByProId } from "@/app/store/srfinalorderSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast } from "react-toastify";
@@ -97,7 +98,14 @@ const Page: React.FC = () => {
                 toast.error("Vendor sale not submitted !");
                 return;
             }
-
+            productInfo.forEach((item: any) => {
+                dispatch(
+                    deleteProductByProId({
+                        proId: item.proId,
+                        username,
+                    })
+                );
+            });
             dispatch(deleteAllProducts(username));
             router.push(`/invoice?cid=${cid}`);
 
