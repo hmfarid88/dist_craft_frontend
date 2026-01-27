@@ -4,6 +4,7 @@ import swal from 'sweetalert';
 
 interface Product {
     id: string;
+    date: string;
     proId: string;
     brand: string;
     color: string;

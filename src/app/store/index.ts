@@ -5,7 +5,7 @@ import productsaleReducer from "../store/productSaleSlice";
 import vendorSaleReducer from "../store/vendorSaleSlice";
 import orderListReducer from "../store/orderlistSlice";
 import srorderReducer from "../store/srorderSlice";
-import srfinalorderReducer from "../store/srfinalorderSlice";
+
 import {
   persistReducer,
   persistStore,
@@ -29,8 +29,7 @@ const rootReducer = combineReducers({
   productTosale: productsaleReducer,
   vendorSale: vendorSaleReducer,
   orderlist: orderListReducer,
-  srOrder: srorderReducer,
-  srFinalOrder:srfinalorderReducer,
+  srOrder: srorderReducer
 });
 
 const persistConfig = {

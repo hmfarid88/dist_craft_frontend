@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, updateSprice, updateDiscount, updateOffer, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSaleSlice";
-import { deleteProductByProId } from "@/app/store/srfinalorderSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
@@ -144,16 +143,6 @@ const Page: React.FC = () => {
       setAddress("");
       setSoldby("");
       setReceived('');
-
-      productInfo.forEach((item: any) => {
-        dispatch(
-          deleteProductByProId({
-            proId: item.proId,
-            username,
-          })
-        );
-      });
-
       dispatch(deleteAllProducts(username));
       router.push(`/invoice?cid=${cid}`);
 
@@ -165,7 +154,7 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+    fetch(`${apiBaseUrl}/api/getSalesProductStock?username=${username}`)
       .then(response => response.json())
       .then(data => {
         const transformedData = data.map((item: any) => ({

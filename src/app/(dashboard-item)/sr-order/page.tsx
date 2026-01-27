@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, updateSprice, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/srorderSlice";
-import { FinaladdProducts, FinaldeleteAllProducts, FinaldeleteProduct} from "@/app/store/srfinalorderSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
@@ -12,7 +11,17 @@ import { FcDeleteDatabase, FcPrint } from "react-icons/fc";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { useReactToPrint } from "react-to-print";
 
+interface Product {
+  proId: number;
+  srname: string;
+  brand: string;
+  productName: string;
+  color: string;
+  productno: string;
+  date: string;
+  sprice: number;
 
+}
 const Page: React.FC = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [date, setDate] = useState('');
@@ -29,13 +38,11 @@ const Page: React.FC = () => {
   const uname = useAppSelector((state) => state.username.username);
   const username = uname ? uname.username : 'Guest';
   const saleProducts = useAppSelector((state) => state.srOrder.products);
-  const finalProducts = useAppSelector((state) => state.srFinalOrder.products);
   const totalQuantity = useAppSelector(selectTotalQuantity);
   const dispatch = useAppDispatch();
 
   const [soldby, setSoldby] = useState("");
 
-  const cid = uid();
   const [maxDate, setMaxDate] = useState("");
   useEffect(() => {
     const today = new Date();
@@ -46,28 +53,55 @@ const Page: React.FC = () => {
     setMaxDate(formattedDate);
     setDate(formattedDate);
   }, []);
-   const contentToPrint = useRef(null);
-    const handlePrint = useReactToPrint({
-        content: () => contentToPrint.current,
-    });
-    const [filterCriteria, setFilterCriteria] = useState('');
+  const contentToPrint = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => contentToPrint.current,
+  });
+
   const selectRef = useRef<any>(null);
 
-const filteredProducts = useMemo(() => {
-        if (!filterCriteria) return finalProducts;
-        const search = filterCriteria.toLowerCase();
-        return finalProducts.filter((p) =>
-            p.srname?.toLowerCase().includes(search) ||
-            p.brand?.toLowerCase().includes(search) ||
-            p.productName?.toLowerCase().includes(search) ||
-            p.color?.toLowerCase().includes(search) ||
-            p.productno?.toLowerCase().includes(search)
-        );
-    }, [finalProducts, filterCriteria]);
+  const fetchOrderList = async () => {
+    try {
+      const response = await fetch(
+        `${apiBaseUrl}/api/getOrderList?username=${username}`
+      );
+      const data = await response.json();
+      setAllProducts(data);
+      setFilteredProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
-    const handleFilterChange = (e: any) => {
-        setFilterCriteria(e.target.value);
-    };
+  useEffect(() => {
+    if (username) {
+      fetchOrderList();
+    }
+  }, [apiBaseUrl, username]);
+
+
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filterCriteria, setFilterCriteria] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const searchWords = filterCriteria.toLowerCase().split(" ");
+    const filtered = allProducts.filter(product =>
+      searchWords.every(word =>
+        (product.brand?.toLowerCase().includes(word) || '') ||
+        (product.date?.toLowerCase().includes(word) || '') ||
+        (product.color?.toLowerCase().includes(word) || '') ||
+        (product.productno?.toLowerCase().includes(word) || '') ||
+        (product.productName?.toLowerCase().includes(word) || '')
+      )
+    );
+
+    setFilteredProducts(filtered);
+  }, [filterCriteria, allProducts]);
+
+  const handleFilterChange = (e: any) => {
+    setFilterCriteria(e.target.value);
+  };
 
   useEffect(() => {
     calculateTotal();
@@ -96,26 +130,43 @@ const filteredProducts = useMemo(() => {
   const totalQty = saleProducts.length;
 
   const FinaltotalQty = filteredProducts.length;
-
   const handleDeleteProduct = (id: any) => {
     dispatch(deleteProduct(id));
   };
+  const handleDeleteFinalProduct = async (proId: number) => {
+    const response = await fetch(
+      `${apiBaseUrl}/api/product-order-delete?username=${username}&proId=${proId}`,
+      {
+        method: "DELETE",
+      }
+    );
 
-  const handleFinalDeleteProduct = (id: any) => {
-    dispatch(FinaldeleteProduct(id));
+    if (!response.ok) {
+      throw new Error("Failed to delete product order");
+    }
+    fetchOrderList();
+    fetchProductStock();
+    toast.success("Delete Successfull")
+
   };
 
-  const productInfo = useMemo(() =>
-    saleProducts.map(p => ({
-      ...p,
-      srname: soldby
-    })),
-    [saleProducts, soldby]);
+  const productInfo = saleProducts.map(product => ({
+    sprice: product.sprice,
+    proId: product.proId,
+    date: date,
+    username: username,
+    srname: soldby,
+    brand: product.brand,
+    color: product.color,
+    productName: product.productName,
+    productno: product.productno
+  }));
+
 
   const handleFinalSubmit = async (e: any) => {
     e.preventDefault();
-    if (!soldby) {
-      toast.info("SR Name is Required !");
+    if (!soldby || soldby === " ") {
+      toast.info("SR name is Required !");
       return;
     }
     if (productInfo.length === 0) {
@@ -123,32 +174,58 @@ const filteredProducts = useMemo(() => {
       return;
     }
 
+
     setPending(true);
     try {
-      dispatch(FinaladdProducts(productInfo));
+      const response = await fetch(`${apiBaseUrl}/api/addOrders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productInfo),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.message || "Product sale not submitted!";
+        toast.error(errorMessage);
+        return;
+      }
       setSoldby("");
+      fetchOrderList();
+      fetchProductStock();
       dispatch(deleteAllProducts(username));
-      toast.success("Order added successfully")
     } catch (error: any) {
       toast.error("An error occurred: " + error.message);
     } finally {
       setPending(false);
     }
   };
+  const fetchProductStock = async () => {
+    try {
+      const response = await fetch(
+        `${apiBaseUrl}/api/getProductStock?username=${username}`
+      );
+      const data = await response.json();
+
+      const transformedData = data.map((item: any) => ({
+        id: item.proId,
+        value: item.proId,
+        label: `${item.productName}, ${item.productno}`,
+      }));
+
+      setProductOption(transformedData);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
-      .then(response => response.json())
-      .then(data => {
-        const transformedData = data.map((item: any) => ({
-          id: item.proId,
-          value: item.proId,
-          label: item.productName + ", " + item.productno
-        }));
-        setProductOption(transformedData);
-      })
-      .catch(error => console.error('Error fetching products:', error));
+    if (username) {
+      fetchProductStock();
+    }
   }, [apiBaseUrl, username]);
+
 
 
   const [srNameOption, setSrNameOption] = useState([]);
@@ -166,11 +243,12 @@ const filteredProducts = useMemo(() => {
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
 
+
   return (
     <div className='container-2xl min-h-[calc(100vh-228px)]'>
       <div className="flex justify-between pt-5 px-10 pb-0">
         <input type="date" name="date" onChange={(e: any) => setDate(e.target.value)} max={maxDate} value={date} className="input input-ghost" />
-        {finalProducts[0]?.srname && (<div className="flex gap-10"> <button onClick={() => { const confirmed = window.confirm("Are you sure to delete all products?"); if (confirmed) { dispatch(FinaldeleteAllProducts(username)); } }} className="flex btn btn-ghost btn-square"><FcDeleteDatabase size={36} /></button>
+        {filteredProducts[0]?.srname && (<div className="flex gap-10">
           <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
           <ExcelExportButton tableRef={contentToPrint} fileName="order_report" />
           <label className="input input-bordered flex max-w-xs  items-center gap-2">
@@ -208,6 +286,7 @@ const filteredProducts = useMemo(() => {
                   const productToSale = {
                     id: uid(),
                     proId: data.proId,
+                    date: date,
                     brand: data.brand,
                     color: data.color,
                     productName: data.productName,
@@ -316,52 +395,53 @@ const filteredProducts = useMemo(() => {
           </div>
         </div>
         <div className="flex flex-col w-1/2 items-center">
-        <div ref={contentToPrint} className="flex flex-col items-center p-3">
-          <h4 className="text-lg">Order List | {FinaltotalQty}</h4>
-          <div className="flex items-center justify-center w-full p-2">
-            <div className="overflow-x-auto">
-              <table className="table table-pin-rows">
-                <thead>
-                  <tr>
-                    <th>SN</th>
-                    <th>SR NAME</th>
-                    <th>DESCRIPTION</th>
-                    <th>PRODUCT NO</th>
-                    <th>SUB TOTAL</th>
-                    <th>ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts?.map((p, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td className="capitalize">{p.srname}</td>
-                      <td>{p.brand}, {p.productName} {p.color}</td>
-                      <td>{p.productno}</td>
-                      <td>{(p.sprice).toLocaleString('en-IN')}</td>
-                      <td>
-                        <button onClick={() => {
-                          handleFinalDeleteProduct(p.id);
-                        }} className="btn btn-sm btn-circle btn-ghost text-error"> <RxCrossCircled size={24} />
-                        </button>
-                      </td>
+          <div ref={contentToPrint} className="flex flex-col items-center p-3">
+            <h4 className="text-lg">Order List | {FinaltotalQty}</h4>
+            <div className="flex items-center justify-center w-full p-2">
+              <div className="overflow-x-auto">
+                <table className="table table-pin-rows">
+                  <thead>
+                    <tr>
+                      <th>SN</th>
+                      <th>DATE</th>
+                      <th>SR NAME</th>
+                      <th>DESCRIPTION</th>
+                      <th>PRODUCT NO</th>
+                      <th>SUB TOTAL</th>
+                      <th>ACTION</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td className="text-lg font-semibold">TOTAL</td>
-                    <td className="text-lg font-semibold">{FinaltotalQty}</td>
-                    <td className="text-lg font-semibold">{Finaltotal}</td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredProducts?.map((p, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{p.date}</td>
+                        <td className="capitalize">{p.srname}</td>
+                        <td>{p.brand}, {p.productName} {p.color}</td>
+                        <td>{p.productno}</td>
+                        <td>{(p.sprice).toLocaleString('en-IN')}</td>
+                        <td>
+                          <button onClick={() => {
+                            handleDeleteFinalProduct(p.proId);
+                          }} className="btn btn-sm btn-circle btn-ghost text-error"> <RxCrossCircled size={24} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan={3}></td>
+                      <td className="text-lg font-semibold">TOTAL</td>
+                      <td className="text-lg font-semibold">{FinaltotalQty}</td>
+                      <td className="text-lg font-semibold">{Finaltotal}</td>
+                    </tr>
+                  </tfoot>
+                </table>
 
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
       <ToastContainer autoClose={1000} theme="dark" />

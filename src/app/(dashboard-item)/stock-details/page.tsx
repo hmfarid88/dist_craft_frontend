@@ -46,7 +46,6 @@ const Page = () => {
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
-
         const filtered = allProducts.filter(product =>
             searchWords.every(word =>
                 (product.category?.toLowerCase().includes(word) || '') ||

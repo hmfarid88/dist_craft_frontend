@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/vendorSaleSlice";
-import { deleteProductByProId } from "@/app/store/srfinalorderSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast } from "react-toastify";
@@ -61,11 +60,13 @@ const Page: React.FC = () => {
     const productInfo = saleProducts.map(product => ({
         proId: product.proId,
         saleType: 'vendor',
+        sprice: product.pprice,
         discount: 0,
         offer: 0,
         date: date,
         cid: cid,
         username: username
+        
     }));
     const handleFinalSubmit = async (e: any) => {
         e.preventDefault();
@@ -80,7 +81,7 @@ const Page: React.FC = () => {
 
         const salesRequest = {
             customer: {
-                cid, cname: vendor, username
+                cid, cname: vendor, username, vatAmount:0
             },
             salesItems: productInfo,
         };
@@ -95,17 +96,10 @@ const Page: React.FC = () => {
             });
 
             if (!response.ok) {
-                toast.error("Vendor sale not submitted !");
+                const errorData = await response.json();
+                toast.error(errorData.message || "Vendor sale not submitted!");
                 return;
             }
-            productInfo.forEach((item: any) => {
-                dispatch(
-                    deleteProductByProId({
-                        proId: item.proId,
-                        username,
-                    })
-                );
-            });
             dispatch(deleteAllProducts(username));
             router.push(`/invoice?cid=${cid}`);
 
@@ -116,7 +110,7 @@ const Page: React.FC = () => {
         }
     };
     useEffect(() => {
-        fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+        fetch(`${apiBaseUrl}/api/getSalesProductStock?username=${username}`)
             .then(response => response.json())
             .then(data => {
                 const transformedData = data.map((item: any) => ({
