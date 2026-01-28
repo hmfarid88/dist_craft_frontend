@@ -10,6 +10,7 @@ import { RxCrossCircled } from "react-icons/rx";
 import { FcDeleteDatabase, FcPrint } from "react-icons/fc";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { useReactToPrint } from "react-to-print";
+import CompanyInfo from "@/app/components/CompanyInfo";
 
 interface Product {
   proId: number;
@@ -88,6 +89,7 @@ const Page: React.FC = () => {
     const searchWords = filterCriteria.toLowerCase().split(" ");
     const filtered = allProducts.filter(product =>
       searchWords.every(word =>
+        (product.srname?.toLowerCase().includes(word) || '') ||
         (product.brand?.toLowerCase().includes(word) || '') ||
         (product.date?.toLowerCase().includes(word) || '') ||
         (product.color?.toLowerCase().includes(word) || '') ||
@@ -396,7 +398,8 @@ const Page: React.FC = () => {
         </div>
         <div className="flex flex-col w-1/2 items-center">
           <div ref={contentToPrint} className="flex flex-col items-center p-3">
-            <h4 className="text-lg">Order List | {FinaltotalQty}</h4>
+            <h4 className="text-lg">ORDER LIST | {FinaltotalQty}</h4>
+            <CompanyInfo />
             <div className="flex items-center justify-center w-full p-2">
               <div className="overflow-x-auto">
                 <table className="table table-pin-rows">
