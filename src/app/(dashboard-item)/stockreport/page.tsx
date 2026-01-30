@@ -158,20 +158,35 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
+  
+useEffect(() => {
+  const search = filterCriteria.trim().toLowerCase();
+  const filtered = allProducts.filter(product => {
+    const text = `
+      ${product.category ?? ''}
+      ${product.brand ?? ''}
+      ${product.productName ?? ''}
+    `.toLowerCase();
+
+    return text.includes(search);
+  });
+
+  setFilteredProducts(filtered);
+}, [filterCriteria, allProducts]);
 
 
-  useEffect(() => {
-    const searchWords = filterCriteria.toLowerCase().split(" ");
-    const filtered = allProducts.filter(product =>
-      searchWords.every(word =>
-        (product.category?.toLowerCase().includes(word) || '') ||
-        (product.brand?.toLowerCase().includes(word) || '') ||
-        (product.productName?.toLowerCase().includes(word) || '')
-      )
-    );
+  // useEffect(() => {
+  //   const searchWords = filterCriteria.toLowerCase().split(" ");
+  //   const filtered = allProducts.filter(product =>
+  //     searchWords.every(word =>
+  //       (product.category?.toLowerCase().includes(word) || '') ||
+  //       (product.brand?.toLowerCase().includes(word) || '') ||
+  //       (product.productName?.toLowerCase().includes(word) || '')
+  //     )
+  //   );
 
-    setFilteredProducts(filtered);
-  }, [filterCriteria, allProducts]);
+  //   setFilteredProducts(filtered);
+  // }, [filterCriteria, allProducts]);
 
 
   const handleFilterChange = (e: any) => {

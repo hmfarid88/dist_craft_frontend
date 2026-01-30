@@ -45,22 +45,44 @@ const Page = () => {
     }, [apiBaseUrl, username]);
 
     useEffect(() => {
-        const searchWords = filterCriteria.toLowerCase().split(" ");
-        const filtered = allProducts.filter(product =>
-            searchWords.every(word =>
-                (product.category?.toLowerCase().includes(word) || '') ||
-                (product.brand?.toLowerCase().includes(word) || '') ||
-                (product.date?.toLowerCase().includes(word) || '') ||
-                (product.color?.toLowerCase().includes(word) || '') ||
-                (product.productno?.toLowerCase().includes(word) || '') ||
-                (product.supplier?.toLowerCase().includes(word) || '') ||
-                (product.supplierInvoice?.toLowerCase().includes(word) || '') ||
-                (product.productName?.toLowerCase().includes(word) || '')
-            )
-        );
+  const search = filterCriteria.trim().toLowerCase();
 
-        setFilteredProducts(filtered);
-    }, [filterCriteria, allProducts]);
+  const filtered = allProducts.filter(product => {
+    const text = `
+      ${product.category ?? ''}
+      ${product.brand ?? ''}
+      ${product.productName ?? ''}
+      ${product.date ?? ''}
+      ${product.color ?? ''}
+      ${product.productno ?? ''}
+      ${product.supplierInvoice ?? ''}
+      ${product.supplier ?? ''}
+    `.toLowerCase();
+
+    return text.includes(search);
+  });
+
+  setFilteredProducts(filtered);
+}, [filterCriteria, allProducts]);
+
+
+    // useEffect(() => {
+    //     const searchWords = filterCriteria.toLowerCase().split(" ");
+    //     const filtered = allProducts.filter(product =>
+    //         searchWords.every(word =>
+    //             (product.category?.toLowerCase().includes(word) || '') ||
+    //             (product.brand?.toLowerCase().includes(word) || '') ||
+    //             (product.date?.toLowerCase().includes(word) || '') ||
+    //             (product.color?.toLowerCase().includes(word) || '') ||
+    //             (product.productno?.toLowerCase().includes(word) || '') ||
+    //             (product.supplier?.toLowerCase().includes(word) || '') ||
+    //             (product.supplierInvoice?.toLowerCase().includes(word) || '') ||
+    //             (product.productName?.toLowerCase().includes(word) || '')
+    //         )
+    //     );
+
+    //     setFilteredProducts(filtered);
+    // }, [filterCriteria, allProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
