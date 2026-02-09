@@ -15,6 +15,7 @@ const Page: React.FC = () => {
   const router = useRouter();
   const [date, setDate] = useState('');
   const [pending, setPending] = useState(false);
+  const [saleNote, setSaleNote] = useState("");
   const [disValue, setDisValue] = useState("");
   const [disPercent, setDisPercent] = useState<number>(0);
   const [sprice, setSprice] = useState<{ [key: string]: string | number }>({});
@@ -92,7 +93,6 @@ const Page: React.FC = () => {
     dispatch(updateOffer({ id, offer: offerValue }));
   };
 
-
   const productInfo = saleProducts.map(product => ({
     sprice: product.sprice,
     discount: product.discount,
@@ -101,6 +101,7 @@ const Page: React.FC = () => {
     date: date,
     cid: cid,
     saleType: 'customer',
+    saleNote:saleNote,
     username: username
   }));
   const handleFinalSubmit = async (e: any) => {
@@ -142,6 +143,7 @@ const Page: React.FC = () => {
       setCard(0);
       setAddress("");
       setSoldby("");
+      setSaleNote("")
       setReceived('');
       dispatch(deleteAllProducts(username));
       router.push(`/invoice?cid=${cid}`);
@@ -385,7 +387,7 @@ const Page: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between">
         <div className="flex w-full justify-center p-5">
           <div className="card shadow shadow-slate-500 max-w-lg gap-3 p-2">
-            <h1 className="font-bold text-sm">PRICE INFO</h1>
+            <h1 className="font-bold text-sm">AMOUNT</h1>
             <label className="input input-bordered flex items-center gap-2">
               <HiOutlineReceiptTax size={20} />
               <span className="text-sm">VAT</span>
@@ -409,9 +411,12 @@ const Page: React.FC = () => {
               <label className="font-bold text-sm">SELECT SR</label>
               <Select className="text-black h-[38px] w-64" onChange={(selectedOption: any) => setSoldby(selectedOption.value)} options={srNameOption} />
             </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-bold text-sm">REMARK</label>
+              <input type="text"  name='note' autoComplete='note' value={saleNote} onChange={(e) => setSaleNote(e.target.value)} placeholder="Type here" className="input input-bordered w-full max-w-xs bg-white text-black" />
+            </div>
           </div>
         </div>
-
         <div className="flex w-full justify-center p-2">
           <div className="card items-center justify-center gap-3 p-2">
             <label className="font-bold">SUBMIT</label>

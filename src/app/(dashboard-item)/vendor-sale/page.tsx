@@ -27,6 +27,7 @@ const Page: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const [vendor, setVendor] = useState("");
+    const [saleNote, setSaleNote] = useState("");
     const cid = uid();
     const selectRef = useRef<any>(null);
     const [maxDate, setMaxDate] = useState("");
@@ -65,8 +66,9 @@ const Page: React.FC = () => {
         offer: 0,
         date: date,
         cid: cid,
+        saleNote:saleNote,
         username: username
-        
+
     }));
     const handleFinalSubmit = async (e: any) => {
         e.preventDefault();
@@ -81,7 +83,7 @@ const Page: React.FC = () => {
 
         const salesRequest = {
             customer: {
-                cid, cname: vendor, username, vatAmount:0
+                cid, cname: vendor, username, vatAmount: 0
             },
             salesItems: productInfo,
         };
@@ -242,6 +244,10 @@ const Page: React.FC = () => {
                     <div className="card shadow shadow-slate-500 max-w-lg gap-3 p-5">
                         <div className="card-title text-sm font-semibold">SELECT VENDOR</div>
                         <Select className="text-black h-[38px] w-64" onChange={(selectedOption: any) => setVendor(selectedOption.value)} options={vendorOption} />
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm">REMARK</label>
+                            <input type="text" name='note' autoComplete='note' value={saleNote} onChange={(e) => setSaleNote(e.target.value)} placeholder="Type here" className="input input-bordered w-full max-w-xs bg-white text-black" />
+                        </div>
                         <button onClick={handleFinalSubmit} disabled={pending} className="btn w-xs h-[38px] btn-success btn-outline font-bold">{pending ? <span className="loading loading-ring loading-md text-accent"></span> : "SUBMIT"}</button>
                     </div>
                 </div>

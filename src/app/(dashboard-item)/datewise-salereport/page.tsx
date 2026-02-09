@@ -14,6 +14,7 @@ interface Product {
     phoneNumber: string;
     address: string;
     soldby: string;
+    saleNote: string;
     category: string;
     brand: string;
     productName: string;
@@ -45,6 +46,7 @@ const Page = () => {
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [groupByProduct, setGroupByProduct] = useState(false);
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/getDatewiseProductSale?username=${username}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
@@ -55,7 +57,29 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, startDate, endDate]);
 
-
+    //added for group
+    const groupedProducts = groupByProduct
+        ? Object.values(
+            filteredProducts.reduce((acc, item) => {
+                const key = item.productName;
+                if (!acc[key]) {
+                    acc[key] = {
+                        ...item,
+                        count: 1,
+                        totalSprice: item.sprice,
+                        totalDiscount: item.discount,
+                        totalOffer: item.offer
+                    };
+                } else {
+                    acc[key].count += 1;
+                    acc[key].totalSprice += item.sprice;
+                    acc[key].totalDiscount += item.discount;
+                    acc[key].totalOffer += item.offer;
+                }
+                return acc;
+            }, {} as Record<string, Product & { count: number; totalSprice: number; totalDiscount: number; totalOffer: number }>)
+        )
+        : [];
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
 
@@ -68,6 +92,7 @@ const Page = () => {
                 (product.productno?.toLowerCase().includes(word) || '') ||
                 (product.cname?.toLowerCase().includes(word) || '') ||
                 (product.soldby?.toLowerCase().includes(word) || '') ||
+                (product.saleNote?.toLowerCase().includes(word) || '') ||
                 (product.phoneNumber?.toLowerCase().includes(word) || '') ||
                 (product.productName?.toLowerCase().includes(word) || '')
             )
@@ -79,19 +104,22 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-    const totalQty = new Set(filteredProducts.map(product => product.productno)).size;
+   
+    const totalQty = groupByProduct
+        ? groupedProducts.reduce((sum, p) => sum + p.count, 0)
+        : new Set(filteredProducts.map(p => p.productno)).size;
 
-    const totalSprice = filteredProducts.reduce((total, product) => {
-        return total + product.sprice;
-    }, 0);
+    const totalSprice = groupByProduct
+        ? groupedProducts.reduce((sum, p) => sum + p.totalSprice, 0)
+        : filteredProducts.reduce((sum, p) => sum + p.sprice, 0);
 
-    const totalDiscount = filteredProducts.reduce((total, product) => {
-        return total + product.discount;
-    }, 0);
+    const totalDiscount = groupByProduct
+        ? groupedProducts.reduce((sum, p) => sum + p.totalDiscount, 0)
+        : filteredProducts.reduce((sum, p) => sum + p.discount, 0);
 
-    const totalOffer = filteredProducts.reduce((total, product) => {
-        return total + product.offer;
-    }, 0);
+    const totalOffer = groupByProduct
+        ? groupedProducts.reduce((sum, p) => sum + p.totalOffer, 0)
+        : filteredProducts.reduce((sum, p) => sum + p.offer, 0);
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
             <div className="flex justify-between p-5">
@@ -113,7 +141,16 @@ const Page = () => {
                 <CompanyInfo />
                 <h4 className="font-bold">SALE REPORT</h4>
                 <h4 className="pb-5">{startDate} TO {endDate}</h4>
-                <div className="flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
+                    {/* added for group */}
+                    <div className="flex w-full justify-end p-5">
+                        <button
+                            onClick={() => setGroupByProduct(!groupByProduct)}
+                            className="btn btn-sm btn-outline btn-primary"
+                        >
+                            {groupByProduct ? "Details View" : "Group View"}
+                        </button>
+                    </div>
                     <table className="table table-sm">
                         <thead className="sticky top-16 bg-base-100">
                             <tr>
@@ -123,6 +160,7 @@ const Page = () => {
                                 <th>INVOICE NO</th>
                                 <th>CUSTOMER INFO</th>
                                 <th>SOLD BY</th>
+                                <th>SALE NOTE</th>
                                 <th>PRODUCT</th>
                                 <th>PRODUCT NO</th>
                                 <th>SALE PRICE</th>
@@ -132,26 +170,44 @@ const Page = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredProducts?.map((product, index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{product.date}</td>
-                                    <td>{product.time}</td>
-                                     <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
-                                    <td className="capitalize">{product.cname}, {product.phoneNumber} {product.address}</td>
-                                    <td className="capitalize">{product.soldby}</td>
-                                    <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
-                                    <td>{product.productno}</td>
-                                    <td>{product.sprice}</td>
-                                    <td>{product.discount}</td>
-                                    <td>{product.offer}</td>
-                                    <td>{product.sprice - product.discount - product.offer}</td>
-                                </tr>
-                            ))}
+                            {!groupByProduct
+                                ? filteredProducts?.map((product, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+                                        <td>{product.date}</td>
+                                        <td>{product.time}</td>
+                                        <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
+                                        <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
+                                        <td className="capitalize">{product.soldby}</td>
+                                        <td className="capitalize">{product.saleNote}</td>
+                                        <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
+                                        <td>{product.productno}</td>
+                                        <td>{product.sprice}</td>
+                                        <td>{product.discount}</td>
+                                        <td>{product.offer}</td>
+                                        <td>{product.sprice - product.discount - product.offer}</td>
+                                    </tr>
+                                ))
+                                : groupedProducts.map((product, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+                                        <td colSpan={2}>Grouped by Product</td>
+                                        <td className="uppercase">{product.cid}</td>
+                                        <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
+                                        <td className="capitalize">{product.soldby}</td>
+                                        <td className="capitalize">{product.saleNote}</td>
+                                        <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
+                                        <td>{product.count} pcs</td>
+                                        <td>{product.totalSprice}</td>
+                                        <td>{product.totalDiscount}</td>
+                                        <td>{product.totalOffer}</td>
+                                        <td>{product.totalSprice - product.totalDiscount - product.totalOffer}</td>
+                                    </tr>
+                                ))}
                         </tbody>
                         <tfoot>
                             <tr className="font-bold text-sm">
-                                <td colSpan={6}></td>
+                                <td colSpan={7}></td>
                                 <td>TOTAL</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>

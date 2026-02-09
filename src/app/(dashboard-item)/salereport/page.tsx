@@ -26,6 +26,7 @@ interface Product {
   offer: number;
   date: string;
   time: string;
+  saleNote: string;
 }
 const Page = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -90,6 +91,7 @@ const Page = () => {
         (product.color?.toLowerCase().includes(word) || '') ||
         (product.productno?.toLowerCase().includes(word) || '') ||
         (product.cname?.toLowerCase().includes(word) || '') ||
+        (product.saleNote?.toLowerCase().includes(word) || '') ||
         (product.soldby?.toLowerCase().includes(word) || '') ||
         (product.phoneNumber?.toLowerCase().includes(word) || '') ||
         (product.productName?.toLowerCase().includes(word) || '')
@@ -102,20 +104,7 @@ const Page = () => {
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
-  // const totalQty = new Set(filteredProducts.map(product => product.productno)).size;
-
-  // const totalSprice = filteredProducts.reduce((total, product) => {
-  //   return total + product.sprice;
-  // }, 0);
-
-  // const totalDiscount = filteredProducts.reduce((total, product) => {
-  //   return total + product.discount;
-  // }, 0);
-
-  // const totalOffer = filteredProducts.reduce((total, product) => {
-  //   return total + product.offer;
-  // }, 0);
-
+  
   //added for group
   const totalQty = groupByProduct
     ? groupedProducts.reduce((sum, p) => sum + p.count, 0)
@@ -174,6 +163,7 @@ const Page = () => {
                 <th>INVOICE NO</th>
                 <th>CUSTOMER INFO</th>
                 <th>SOLD BY</th>
+                <th>SALE NOTE</th>
                 <th>PRODUCT</th>
                 <th>PRODUCT NO</th>
                 <th>SALE PRICE</th>
@@ -182,24 +172,7 @@ const Page = () => {
                 <th>TOTAL</th>
               </tr>
             </thead>
-            {/* <tbody>
-              {filteredProducts?.map((product, index) => (
-                <tr key={index}>
-                  <th>{index + 1}</th>
-                  <td>{product.date}</td>
-                  <td>{product.time}</td>
-                  <td className="uppercase">{product.cid}</td>
-                  <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
-                  <td className="capitalize">{product.soldby}</td>
-                  <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
-                  <td>{product.productno}</td>
-                  <td>{product.sprice}</td>
-                  <td>{product.discount}</td>
-                  <td>{product.offer}</td>
-                  <td>{product.sprice - product.discount - product.offer}</td>
-                </tr>
-              ))}
-            </tbody> */}
+           
             <tbody>
               {!groupByProduct
                 ? filteredProducts?.map((product, index) => (
@@ -210,6 +183,7 @@ const Page = () => {
                     <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
                     <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
                     <td className="capitalize">{product.soldby}</td>
+                    <td className="capitalize">{product.saleNote}</td>
                     <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
                     <td>{product.productno}</td>
                     <td>{product.sprice}</td>
@@ -225,6 +199,7 @@ const Page = () => {
                     <td className="uppercase">{product.cid}</td>
                     <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
                     <td className="capitalize">{product.soldby}</td>
+                    <td className="capitalize">{product.saleNote}</td>
                     <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
                     <td>{product.count} pcs</td>
                     <td>{product.totalSprice}</td>
@@ -237,7 +212,7 @@ const Page = () => {
 
             <tfoot>
               <tr className="font-bold text-sm">
-                <td colSpan={6}></td>
+                <td colSpan={7}></td>
                 <td>TOTAL</td>
                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                 <td>{Number(totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>

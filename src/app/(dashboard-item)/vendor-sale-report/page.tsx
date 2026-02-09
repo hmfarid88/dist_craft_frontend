@@ -22,6 +22,7 @@ interface Product {
     sprice: number;
     date: string;
     time: string;
+    saleNote: string;
 }
 const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -57,6 +58,7 @@ const Page = () => {
                 (product.color?.toLowerCase().includes(word) || '') ||
                 (product.productno?.toLowerCase().includes(word) || '') ||
                 (product.cname?.toLowerCase().includes(word) || '') ||
+                (product.saleNote?.toLowerCase().includes(word) || '') ||
                 (product.phoneNumber?.toLowerCase().includes(word) || '') ||
                 (product.productName?.toLowerCase().includes(word) || '')
             )
@@ -109,6 +111,7 @@ const Page = () => {
                                 <th>SALE TIME</th>
                                 <th>INVOICE NO</th>
                                 <th>CUSTOMER INFO</th>
+                                <th>SALE NOTE</th>
                                 <th>PRODUCT</th>
                                 <th>PRODUCT NO</th>
                                 <th>RP VALUE</th>
@@ -124,6 +127,7 @@ const Page = () => {
                                     <td>{product.time}</td>
                                     <td className="uppercase">{product.cid}</td>
                                     <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
+                                    <td className="capitalize">{product.saleNote}</td>
                                     <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
                                     <td>{product.productno}</td>
                                     <td>{product.pprice}</td>
@@ -134,7 +138,7 @@ const Page = () => {
                         </tbody>
                         <tfoot>
                             <tr className="font-bold text-sm">
-                                <td colSpan={5}></td>
+                                <td colSpan={6}></td>
                                 <td>TOTAL</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
