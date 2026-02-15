@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, updateSprice, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/srorderSlice";
 import Select from "react-select";
@@ -7,7 +7,7 @@ import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { RxCrossCircled } from "react-icons/rx";
-import { FcDeleteDatabase, FcPrint } from "react-icons/fc";
+import { FcPrint } from "react-icons/fc";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { useReactToPrint } from "react-to-print";
 import CompanyInfo from "@/app/components/CompanyInfo";
@@ -264,11 +264,11 @@ const Page: React.FC = () => {
       <div className="flex flex-col w-full">
         <div className="divider divider-accent tracking-widest font-bold p-5">ORDER AREA</div>
       </div>
-      <div className="flex w-full">
-        <div className="flex flex-col w-1/2">
+      <div className="flex flex-col lg:flex-row w-full">
+        <div className="flex flex-col w-full lg:w-1/2">
           <div className="flex items-center gap-2 justify-center">
             <Select
-              className="text-black w-64 md:w-96 z-10"
+              className="text-black w-full max-w-md z-10"
               ref={selectRef}
               autoFocus={true}
               value={selectedProidOption}
@@ -375,14 +375,13 @@ const Page: React.FC = () => {
 
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between">
-
+         <div className="flex flex-col lg:flex-row gap-4 justify-between">
             <div className="flex w-full justify-center p-5">
               <div className="card shadow shadow-slate-500 max-w-lg gap-5 p-2">
 
                 <div className="flex flex-col gap-2">
                   <label className="font-bold text-sm">SELECT SR</label>
-                  <Select className="text-black h-[38px] w-64" onChange={(selectedOption: any) => setSoldby(selectedOption.value)} options={srNameOption} />
+                  <Select className="text-black h-[38px] w-full max-w-xs" onChange={(selectedOption: any) => setSoldby(selectedOption.value)} options={srNameOption} />
                 </div>
               </div>
             </div>
@@ -396,13 +395,13 @@ const Page: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-1/2 items-center">
+       <div className="flex flex-col w-full lg:w-1/2 items-center">
           <div ref={contentToPrint} className="flex flex-col items-center p-3">
             <h4 className="text-lg">ORDER LIST | {FinaltotalQty}</h4>
             <CompanyInfo />
             <div className="flex items-center justify-center w-full p-2">
-              <div className="overflow-x-auto">
-                <table className="table table-pin-rows">
+              <div className="w-full overflow-x-auto max-h-96">
+                <table className="table table-pin-rows w-full">
                   <thead>
                     <tr>
                       <th>SN</th>
