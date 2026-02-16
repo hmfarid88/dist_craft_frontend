@@ -400,7 +400,7 @@ const Page: React.FC = () => {
             <h4 className="text-lg">ORDER LIST | {FinaltotalQty}</h4>
             <CompanyInfo />
             <div className="flex items-center justify-center w-full p-2">
-              <div className="w-full overflow-x-auto max-h-96">
+              <div className="w-full overflow-x-auto min-h-96">
                 <table className="table table-pin-rows w-full">
                   <thead>
                     <tr>
