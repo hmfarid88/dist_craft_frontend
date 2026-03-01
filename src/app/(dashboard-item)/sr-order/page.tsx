@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, updateSprice, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/srorderSlice";
 import Select from "react-select";
@@ -35,6 +35,7 @@ const Page: React.FC = () => {
 
   const [productOption, setProductOption] = useState([]);
   const [selectedProidOption, setSelectedProidOption] = useState(null);
+  const [groupBySr, setGroupBySr] = useState(false);
 
   const uname = useAppSelector((state) => state.username.username);
   const username = uname ? uname.username : 'Guest';
@@ -104,6 +105,30 @@ const Page: React.FC = () => {
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
+  const groupedProducts = Object.values(
+    filteredProducts.reduce((acc: any, product: any) => {
+
+      const key = product.srname; // 👈 group by SR NAME
+
+      if (!acc[key]) {
+        acc[key] = {
+          srname: product.srname,
+          count: 0,
+          totalSprice: 0,
+          totalDiscount: 0,
+          totalOffer: 0,
+        };
+      }
+
+      acc[key].count += 1;
+      acc[key].totalSprice += product.sprice;
+      acc[key].totalDiscount += product.discount;
+      acc[key].totalOffer += product.offer;
+
+      return acc;
+
+    }, {})
+  );
 
   useEffect(() => {
     calculateTotal();
@@ -375,7 +400,7 @@ const Page: React.FC = () => {
 
             </div>
           </div>
-         <div className="flex flex-col lg:flex-row gap-4 justify-between">
+          <div className="flex flex-col lg:flex-row gap-4 justify-between">
             <div className="flex w-full justify-center p-5">
               <div className="card shadow shadow-slate-500 max-w-lg gap-5 p-2">
 
@@ -395,11 +420,19 @@ const Page: React.FC = () => {
             </div>
           </div>
         </div>
-       <div className="flex flex-col w-full lg:w-1/2 items-center">
+        <div className="flex flex-col w-full lg:w-1/2 items-center">
           <div ref={contentToPrint} className="flex flex-col items-center p-3">
             <h4 className="text-lg">ORDER LIST | {FinaltotalQty}</h4>
             <CompanyInfo />
-            <div className="flex items-center justify-center w-full p-2">
+            <div className="flex flex-col items-center justify-center w-full p-2">
+              <div className="flex w-full justify-end p-2">
+                <button
+                  onClick={() => setGroupBySr(!groupBySr)}
+                  className="btn btn-sm btn-primary mb-3"
+                >
+                  {groupBySr ? "Details View" : "Group View"}
+                </button>
+              </div>
               <div className="w-full overflow-x-auto min-h-96">
                 <table className="table table-pin-rows w-full">
                   <thead>
@@ -413,7 +446,7 @@ const Page: React.FC = () => {
                       <th>ACTION</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  {/* <tbody>
                     {filteredProducts?.map((p, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
@@ -430,6 +463,40 @@ const Page: React.FC = () => {
                         </td>
                       </tr>
                     ))}
+                  </tbody> */}
+                  <tbody>
+                    {!groupBySr
+                      ? filteredProducts?.map((product, index) => (
+                        <tr key={index}>
+                          <th>{index + 1}</th>
+                          <td>{product.date}</td>
+                          <td className="capitalize">{product.srname}</td>
+                          <td className="capitalize">
+                            {product.brand},{product.productName} {product.color}
+                          </td>
+                          <td>{product.productno}</td>
+                          <td>{(product.sprice).toLocaleString('en-IN')}</td>
+                          <td>
+                            <button onClick={() => {
+                              handleDeleteFinalProduct(product.proId);
+                            }} className="btn btn-sm btn-circle btn-ghost text-error"> <RxCrossCircled size={24} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                      : groupedProducts.map((product: any, index) => (
+                        <tr key={index}>
+                          <th>{index + 1}</th>
+                          <td colSpan={1}>Grouped by SR</td>
+                          <td className="capitalize font-semibold">
+                            {product.srname}
+                          </td>
+                          <td></td>
+                          <td>{product.count} pcs</td>
+                          <td>{product.totalSprice}</td>
+                     
+                        </tr>
+                      ))}
                   </tbody>
                   <tfoot>
                     <tr>
@@ -440,7 +507,6 @@ const Page: React.FC = () => {
                     </tr>
                   </tfoot>
                 </table>
-
               </div>
             </div>
           </div>

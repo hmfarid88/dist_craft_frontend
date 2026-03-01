@@ -1,16 +1,17 @@
 'use client'
-import React, { useState, useEffect, useRef } from "react";
+import CompanyInfo from "@/app/components/CompanyInfo";
+import CurrentDate from "@/app/components/CurrentDate";
+import ExcelExportButton from "@/app/components/ExcellGeneration";
 import { useAppSelector } from "@/app/store";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import CurrentDate from "@/app/components/CurrentDate";
-import { useSearchParams } from "next/navigation";
-import ExcelExportButton from "@/app/components/ExcellGeneration";
-import CompanyInfo from "@/app/components/CompanyInfo";
 
 type Product = {
     date: string;
     invoice: string;
+    note: string;
     productAmount: number;
     vatAmount: number;
     payment: number;
@@ -94,6 +95,7 @@ const Page = () => {
                                     <th>SN</th>
                                     <th>DATE</th>
                                     <th>INVOICE NO</th>
+                                    <th>NOTE</th>
                                     <th>PRODUCT VALUE</th>
                                     <th>PAYMENT</th>
                                     <th>BALANCE</th>
@@ -110,6 +112,7 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
                                             <td className="uppercase">{product.invoice}</td>
+                                            <td className="uppercase">{product.note}</td>
                                             <td>{Number((product.productAmount + product.vatAmount).toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.payment.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
