@@ -341,21 +341,21 @@ const Page: React.FC = () => {
                         name="sprice"
                         value={sprice[p.id] !== undefined ? sprice[p.id] : p.sprice}
                         onChange={(e) => dispatch(updateSprice({ id: p.id, sprice: parseFloat(e.target.value) || 0 }))}
+                        onWheel={(e) => e.currentTarget.blur()}
                         className="bg-base-100 w-20 input input-xs input-bordered border-slate-700"
                       />
                     </td>
-
                     <td>
-                      <input type="number" step="any" name="discount" value={p.discount} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                      <input type="number" step="any" name="discount" value={p.discount} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
                       <input type="number" name="percent" step="any" placeholder="0.00" onChange={(e) => {
                         const disPercent = parseFloat(e.target.value) || 0;
                         dispatch(updateDiscount({ id: p.id, discount: (p.sprice * disPercent) / 100 }));
-                      }} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                      }} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
-                      <input type="number" name="offer" value={p.offer} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                      <input type="number" name="offer" value={p.offer} onWheel={(e) => e.currentTarget.blur()} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>{(p.sprice - p.discount - p.offer).toLocaleString('en-IN')}</td>
                     <td>
