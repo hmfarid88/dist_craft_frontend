@@ -108,22 +108,22 @@ const Page: React.FC = () => {
   const groupedProducts = Object.values(
     filteredProducts.reduce((acc: any, product: any) => {
 
-      const key = product.srname; // 👈 group by SR NAME
+      // 👇 combine SR + Product as key
+      const key = `${product.srname}_${product.productName}`;
 
       if (!acc[key]) {
         acc[key] = {
           srname: product.srname,
+          productName: product.productName,
+          brand: product.brand,
+          color: product.color,
           count: 0,
           totalSprice: 0,
-          totalDiscount: 0,
-          totalOffer: 0,
         };
       }
 
       acc[key].count += 1;
       acc[key].totalSprice += product.sprice;
-      acc[key].totalDiscount += product.discount;
-      acc[key].totalOffer += product.offer;
 
       return acc;
 
@@ -472,29 +472,31 @@ const Page: React.FC = () => {
                           <td>{product.date}</td>
                           <td className="capitalize">{product.srname}</td>
                           <td className="capitalize">
-                            {product.brand},{product.productName} {product.color}
+                            {product.brand}, {product.productName} {product.color}
                           </td>
                           <td>{product.productno}</td>
-                          <td>{(product.sprice).toLocaleString('en-IN')}</td>
+                          <td>{product.sprice.toLocaleString('en-IN')}</td>
                           <td>
-                            <button onClick={() => {
-                              handleDeleteFinalProduct(product.proId);
-                            }} className="btn btn-sm btn-circle btn-ghost text-error"> <RxCrossCircled size={24} />
+                            <button
+                              onClick={() => handleDeleteFinalProduct(product.proId)}
+                              className="btn btn-sm btn-circle btn-ghost text-error"
+                            >
+                              <RxCrossCircled size={24} />
                             </button>
                           </td>
                         </tr>
                       ))
                       : groupedProducts.map((product: any, index) => (
-                        <tr key={index}>
+                        <tr key={index} className="bg-base-200 font-semibold">
                           <th>{index + 1}</th>
-                          <td colSpan={1}>Grouped by SR</td>
-                          <td className="capitalize font-semibold">
-                            {product.srname}
+                          <td>Grouped</td>
+                          <td className="capitalize">{product.srname}</td>
+                          <td className="capitalize">
+                            {product.brand}, {product.productName}
                           </td>
-                          <td></td>
                           <td>{product.count} pcs</td>
-                          <td>{product.totalSprice}</td>
-                     
+                          <td>{product.totalSprice.toLocaleString('en-IN')}</td>
+                          <td>-</td>
                         </tr>
                       ))}
                   </tbody>

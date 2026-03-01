@@ -112,7 +112,7 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
                                             <td className="uppercase">{product.invoice}</td>
-                                            <td className="uppercase">{product.note}</td>
+                                            <td className="uppercase">{product?.note}</td>
                                             <td>{Number((product.productAmount + product.vatAmount).toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.payment.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>

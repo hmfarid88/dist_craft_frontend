@@ -581,9 +581,7 @@ const Purchase = () => {
 
           <label className="form-control w-full max-w-xs">
             <div className="label">
-
               <span className="label-text-alt">PRODUCT ID / QTY</span>
-
               <div className="flex gap-2">
                 <span className="label-text-alt">BULK QTY</span>
                 <input type="checkbox" className="checkbox checkbox-success w-[20px] h-[20px]" checked={bulkQty}
