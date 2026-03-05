@@ -101,7 +101,7 @@ const Page: React.FC = () => {
     date: date,
     cid: cid,
     saleType: 'customer',
-    saleNote:saleNote,
+    saleNote: saleNote,
     username: username
   }));
   const handleFinalSubmit = async (e: any) => {
@@ -337,25 +337,42 @@ const Page: React.FC = () => {
                     <td>{p.productno}</td>
                     <td>
                       <input
-                        type="number"
+                        type="text"
                         name="sprice"
                         value={sprice[p.id] !== undefined ? sprice[p.id] : p.sprice}
                         onChange={(e) => dispatch(updateSprice({ id: p.id, sprice: parseFloat(e.target.value) || 0 }))}
                         onWheel={(e) => e.currentTarget.blur()}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                            e.preventDefault();
+                          }
+                        }}
                         className="bg-base-100 w-20 input input-xs input-bordered border-slate-700"
                       />
                     </td>
                     <td>
-                      <input type="number" step="any" name="discount" value={p.discount} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                      <input type="number" step="any" name="discount" value={p.discount} onKeyDown={(e) => {
+                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                            e.preventDefault();
+                          }
+                        }} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
-                      <input type="number" name="percent" step="any" placeholder="0.00" onChange={(e) => {
+                      <input type="number" name="percent" step="any" placeholder="0.00" onKeyDown={(e) => {
+                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                            e.preventDefault();
+                          }
+                        }} onChange={(e) => {
                         const disPercent = parseFloat(e.target.value) || 0;
                         dispatch(updateDiscount({ id: p.id, discount: (p.sprice * disPercent) / 100 }));
                       }} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
-                      <input type="number" name="offer" value={p.offer} onWheel={(e) => e.currentTarget.blur()} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                      <input type="number" name="offer" value={p.offer} onKeyDown={(e) => {
+                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                            e.preventDefault();
+                          }
+                        }} onWheel={(e) => e.currentTarget.blur()} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>{(p.sprice - p.discount - p.offer).toLocaleString('en-IN')}</td>
                     <td>
@@ -413,7 +430,7 @@ const Page: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-bold text-sm">REMARK</label>
-              <input type="text"  name='note' autoComplete='note' value={saleNote} onChange={(e) => setSaleNote(e.target.value)} placeholder="Type here" className="input input-bordered w-full max-w-xs bg-white text-black" />
+              <input type="text" name='note' autoComplete='note' value={saleNote} onChange={(e) => setSaleNote(e.target.value)} placeholder="Type here" className="input input-bordered w-full max-w-xs bg-white text-black" />
             </div>
           </div>
         </div>
