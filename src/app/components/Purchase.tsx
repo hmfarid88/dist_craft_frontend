@@ -5,7 +5,7 @@ import Select from "react-select";
 import { uid } from "uid";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSlice";
-import { toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { FcPlus } from "react-icons/fc";
 
 const Purchase = () => {
@@ -443,33 +443,79 @@ const Purchase = () => {
     }
   }, [apiBaseUrl, username, brand, productName]);
 
+  // const handleSubmit = (e: any) => {
+  //   e.preventDefault();
+  //   if (bulkQty && bulkQuantity > 0) {
+  //     const products = Array.from({ length: bulkQuantity }).map(() => ({
+  //       id: uid(),
+  //       username,
+  //       category,
+  //       brand,
+  //       productName,
+  //       pprice,
+  //       sprice,
+  //       color,
+  //       supplier,
+  //       supplierInvoice,
+  //       date,
+  //       productno: generateProductNo(),
+  //     }));
+  //     products.forEach((product) => dispatch(addProducts(product)));
+  //     setBulkQuantity(0);
+  //   } else {
+  //     const product = { id: uid(), username, category, brand, productName, pprice, sprice, color, supplier, supplierInvoice, date, productno }
+  //     dispatch(addProducts(product));
+  //     setPno("");
+  //     document.getElementById('pno')?.focus();
+  //   }
+  // }
   const handleSubmit = (e: any) => {
-    e.preventDefault();
-    if (bulkQty && bulkQuantity > 0) {
-      const products = Array.from({ length: bulkQuantity }).map(() => ({
-        id: uid(),
-        username,
-        category,
-        brand,
-        productName,
-        pprice,
-        sprice,
-        color,
-        supplier,
-        supplierInvoice,
-        date,
-        productno: generateProductNo(),
-      }));
-      products.forEach((product) => dispatch(addProducts(product)));
-      setBulkQuantity(0);
-    } else {
-      const product = { id: uid(), username, category, brand, productName, pprice, sprice, color, supplier, supplierInvoice, date, productno }
-      dispatch(addProducts(product));
-      setPno("");
-      document.getElementById('pno')?.focus();
-    }
-  }
+  e.preventDefault();
 
+  if (bulkQty && bulkQuantity > 0) {
+    const products = Array.from({ length: bulkQuantity }).map(() => ({
+      id: uid(),
+      username,
+      category,
+      brand,
+      productName,
+      pprice,
+      sprice,
+      color,
+      supplier,
+      supplierInvoice,
+      date,
+      productno: generateProductNo(),
+    }));
+
+    products.forEach((product) => dispatch(addProducts(product)));
+    setBulkQuantity(0);
+
+  } else {
+    submitProduct(productno);
+    setPno("");
+    document.getElementById("pno")?.focus();
+  }
+};
+
+const submitProduct = (pno: string) => {
+  const product = {
+    id: uid(),
+    username,
+    category,
+    brand,
+    productName,
+    pprice,
+    sprice,
+    color,
+    supplier,
+    supplierInvoice,
+    date,
+    productno: pno
+  };
+
+  dispatch(addProducts(product));
+};
   const products = useAppSelector((state) => state.products.products);
   const viewdispatch = useAppDispatch();
   const totalQuantity = useAppSelector(selectTotalQuantity);
@@ -518,7 +564,12 @@ const Purchase = () => {
       setPending(false);
     }
   };
-
+useEffect(() => {
+  if (productno.length === 15) {
+    submitProduct(productno);
+    setPno("");
+  }
+}, [productno]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-center">
       <form onSubmit={handleSubmit}>
@@ -590,7 +641,24 @@ const Purchase = () => {
             </div>
 
             {!bulkQty && (
-              <input type="text" id="pno" maxLength={15} value={productno} name="pno" placeholder="Enter Product ID" onChange={(e: any) => setPno(e.target.value.replace(/\D/g, ""))} className="input input-bordered rounded-md  w-full max-w-xs h-[40px] bg-white text-black" required />
+              // <input type="text" id="pno" maxLength={15} value={productno} name="pno" placeholder="Enter Product ID" onChange={(e: any) => setPno(e.target.value.replace(/\D/g, ""))} className="input input-bordered rounded-md  w-full max-w-xs h-[40px] bg-white text-black" required />
+              <input
+                type="text"
+                id="pno"
+                value={productno}
+                placeholder="Enter Product ID"
+                onChange={(e: any) => {
+                  let digits = e.target.value.replace(/\D/g, "");
+                  while (digits.length >= 15) {
+                    const code = digits.slice(0, 15);
+                    submitProduct(code);
+                    digits = digits.slice(15);
+                  }
+                  setPno(digits);
+                }}
+                className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black"
+                autoFocus required
+               />
             )}
             {bulkQty && (
               <label className="form-control w-full max-w-xs">
@@ -783,7 +851,7 @@ const Purchase = () => {
           </div>
         </div>
       </div>
-      
+
     </div>
   )
 }
