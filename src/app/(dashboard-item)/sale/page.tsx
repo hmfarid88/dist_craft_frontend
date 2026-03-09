@@ -132,13 +132,8 @@ const Page: React.FC = () => {
         offer: 0,
         username: username
       }));
-
       dispatch(addProductsBulk(saleProducts));
-
       setBulkInput("");
-
-      toast.success(`${saleProducts.length} products added`);
-
     } catch (error) {
       console.error(error);
     }
