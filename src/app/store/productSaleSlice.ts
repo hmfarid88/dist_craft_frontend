@@ -28,13 +28,42 @@ export const productSaleSlice = createSlice({
     reducers: {
 
         addProducts: (state, action: PayloadAction<Product>) => {
-            const exist = state.products.find((pro) => pro.username===action.payload.username && pro.productno === action.payload.productno)
+            const exist = state.products.find((pro) => pro.username === action.payload.username && pro.productno === action.payload.productno)
             if (exist) {
                 swal("Oops!", "This Product is already exist!", "error");
             } else {
                 state.products.push(action.payload);
             }
+        },
+        addProductsBulk: (state, action: PayloadAction<Product[]>) => {
 
+            const newProducts: Product[] = [];
+            const duplicateProducts: string[] = [];
+
+            action.payload.forEach((product) => {
+
+                const exist = state.products.find(
+                    (pro) =>
+                        pro.username === product.username &&
+                        pro.productno === product.productno
+                );
+
+                if (exist) {
+                    duplicateProducts.push(product.productno);
+                } else {
+                    newProducts.push(product);
+                }
+            });
+
+            state.products.push(...newProducts);
+
+            if (duplicateProducts.length > 0) {
+                swal(
+                    "Duplicate Products",
+                    `Already exist: ${duplicateProducts.join(", ")}`,
+                    "warning"
+                );
+            }
         },
         updateSprice: (state, action) => {
             const { id, sprice } = action.payload;
@@ -74,6 +103,6 @@ export const selectTotalQuantity = createSelector(
     (products) => products.reduce((total, product) => total + 1, 0)
 );
 
-export const { addProducts, updateSprice, updateDiscount, updateOffer, deleteProduct, deleteAllProducts } = productSaleSlice.actions;
+export const { addProducts, addProductsBulk, updateSprice, updateDiscount, updateOffer, deleteProduct, deleteAllProducts } = productSaleSlice.actions;
 
 export default productSaleSlice.reducer;

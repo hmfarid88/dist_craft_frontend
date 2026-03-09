@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { addProducts, updateSprice, updateDiscount, updateOffer, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSaleSlice";
+import { addProducts, addProductsBulk, updateSprice, updateDiscount, updateOffer, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/productSaleSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast, ToastContainer } from "react-toastify";
@@ -21,6 +21,7 @@ const Page: React.FC = () => {
   const [sprice, setSprice] = useState<{ [key: string]: string | number }>({});
   const [offerValue, setOfferValue] = useState("");
   const [total, setTotal] = useState(0);
+  const [bulkInput, setBulkInput] = useState("");
 
   const [productOption, setProductOption] = useState([]);
   const [selectedProidOption, setSelectedProidOption] = useState(null);
@@ -92,7 +93,56 @@ const Page: React.FC = () => {
   const handleUpdateOffer = (id: any) => {
     dispatch(updateOffer({ id, offer: offerValue }));
   };
+  const handleBulkAdd = async () => {
 
+    if (!bulkInput.trim()) return;
+
+    // split by space, comma, or newline
+    const productNos = bulkInput
+      .split(/[\s,]+/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+
+    try {
+
+      const response = await fetch(`${apiBaseUrl}/api/getProductsByProductNos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(productNos)
+      });
+
+      if (!response.ok) {
+        toast.error("Error fetching products");
+        return;
+      }
+
+      const products = await response.json();
+
+      const saleProducts = products.map((data: any) => ({
+        id: uid(),
+        proId: data.proId,
+        brand: data.brand,
+        color: data.color,
+        productName: data.productName,
+        productno: data.productno,
+        sprice: data.sprice,
+        discount: 0,
+        offer: 0,
+        username: username
+      }));
+
+      dispatch(addProductsBulk(saleProducts));
+
+      setBulkInput("");
+
+      toast.success(`${saleProducts.length} products added`);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const productInfo = saleProducts.map(product => ({
     sprice: product.sprice,
     discount: product.discount,
@@ -257,57 +307,76 @@ const Page: React.FC = () => {
         <div className="flex flex-col w-full">
           <div className="divider divider-accent tracking-widest font-bold p-5">SALES AREA</div>
         </div>
+        <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
+          <div className="flex gap-2">
+            <Select
+              className="text-black w-64 md:w-96 z-10 mt-2"
+              ref={selectRef}
+              autoFocus={true}
+              value={selectedProidOption}
+              options={productOption}
+              onChange={async (selectedOption: any) => {
+                if (!selectedOption) return;
+                setSelectedProidOption(selectedOption);
 
-        <div className="flex items-center gap-2 justify-center">
-          <Select
-            className="text-black w-64 md:w-96 z-10"
-            ref={selectRef}
-            autoFocus={true}
-            value={selectedProidOption}
-            options={productOption}
+                try {
+                  const response = await fetch(`${apiBaseUrl}/api/getSingleProduct?proId=${selectedOption.value}`);
+                  if (!response.ok) {
+                    toast.error("Error fetching product data");
+                    return;
+                  }
+                  const data = await response.json();
+                  const productToSale = {
+                    id: uid(),
+                    proId: data.proId,
+                    brand: data.brand,
+                    color: data.color,
+                    productName: data.productName,
+                    productno: data.productno,
+                    sprice: data.sprice,
+                    discount: 0,
+                    offer: 0,
+                    username: username
+                  };
 
-            onChange={async (selectedOption: any) => {
-              if (!selectedOption) return;
-              setSelectedProidOption(selectedOption);
+                  dispatch(addProducts(productToSale));
+                  setSelectedProidOption(null);
+                  if (selectRef.current) {
+                    selectRef.current.focus();
+                  }
+                } catch (error) {
+                  console.error('Error fetching product:', error);
 
-              try {
-                const response = await fetch(`${apiBaseUrl}/api/getSingleProduct?proId=${selectedOption.value}`);
-                if (!response.ok) {
-                  toast.error("Error fetching product data");
-                  return;
                 }
-                const data = await response.json();
-                const productToSale = {
-                  id: uid(),
-                  proId: data.proId,
-                  brand: data.brand,
-                  color: data.color,
-                  productName: data.productName,
-                  productno: data.productno,
-                  sprice: data.sprice,
-                  discount: 0,
-                  offer: 0,
-                  username: username
-                };
-
-                dispatch(addProducts(productToSale));
-                setSelectedProidOption(null);
-                if (selectRef.current) {
-                  selectRef.current.focus();
-                }
-              } catch (error) {
-                console.error('Error fetching product:', error);
-
-              }
-            }}
-          />
-          <div className="flex">
-            <div className="avatar-group -space-x-6 rtl:space-x-reverse">
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content w-12">
-                  <span>{totalQuantity}</span>
+              }}
+            />
+            <div className="flex">
+              <div className="avatar-group -space-x-6 rtl:space-x-reverse">
+                <div className="avatar placeholder">
+                  <div className="bg-neutral text-neutral-content w-12">
+                    <span>{totalQuantity}</span>
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="collapse collapse-arrow bg-base-200 max-w-64">
+            <input type="checkbox" className="peer" />
+            <div className="collapse-title text-sm font-medium">Bulk Sale</div>
+            <div className="collapse-content">
+              <textarea
+                className="textarea textarea-bordered p-2"
+                placeholder="Input product numbers"
+                value={bulkInput}
+                onChange={(e) => setBulkInput(e.target.value)}
+              />
+
+              <button
+                className="btn btn-primary btn-sm mt-2"
+                onClick={handleBulkAdd}
+              >
+                Add Products
+              </button>
             </div>
           </div>
         </div>
@@ -352,27 +421,27 @@ const Page: React.FC = () => {
                     </td>
                     <td>
                       <input type="number" step="any" name="discount" value={p.discount} onKeyDown={(e) => {
-                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                            e.preventDefault();
-                          }
-                        }} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                        }
+                      }} onChange={(e) => dispatch(updateDiscount({ id: p.id, discount: parseFloat(e.target.value) || 0 }))} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
                       <input type="number" name="percent" step="any" placeholder="0.00" onKeyDown={(e) => {
-                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                            e.preventDefault();
-                          }
-                        }} onChange={(e) => {
+                        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                        }
+                      }} onChange={(e) => {
                         const disPercent = parseFloat(e.target.value) || 0;
                         dispatch(updateDiscount({ id: p.id, discount: (p.sprice * disPercent) / 100 }));
                       }} onWheel={(e) => e.currentTarget.blur()} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>
                       <input type="number" name="offer" value={p.offer} onKeyDown={(e) => {
-                          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                            e.preventDefault();
-                          }
-                        }} onWheel={(e) => e.currentTarget.blur()} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
+                        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                        }
+                      }} onWheel={(e) => e.currentTarget.blur()} onChange={(e) => dispatch(updateOffer({ id: p.id, offer: parseFloat(e.target.value) || 0 }))} className="bg-base-100 w-20 input input-xs input-bordered border-slate-700" />
                     </td>
                     <td>{(p.sprice - p.discount - p.offer).toLocaleString('en-IN')}</td>
                     <td>
