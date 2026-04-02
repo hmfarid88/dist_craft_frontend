@@ -30,7 +30,7 @@ export async function createSession(username: string, roles: string) {
 
   cookies().set('distcraft_session', session, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',
@@ -49,7 +49,7 @@ export async function updateSession() {
   const expires = new Date(Date.now() + 12 * 60 * 60 * 1000)
   cookies().set('distcraft_session', session, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     expires: expires,
     sameSite: 'lax',
     path: '/',
