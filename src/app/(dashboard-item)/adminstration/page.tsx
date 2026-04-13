@@ -9,8 +9,8 @@ import ShopInfo from '@/app/components/ShopInfo'
 import SmsSetting from '@/app/components/SmsSetting'
 import UserChange from '@/app/components/UserChange'
 import VatInfo from '@/app/components/VatInfo'
-import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 import { FaBalanceScale } from 'react-icons/fa'
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdOutlinePassword } from 'react-icons/md'
@@ -19,26 +19,37 @@ import { FaUsers } from "react-icons/fa6";
 import RetailerInfo from '@/app/components/RetailerInfo'
 import SrInfo from '@/app/components/SrInfo'
 import ProductEdit from '@/app/components/ProductEdit'
+import { toast } from 'react-toastify'
+import { CgEditExposure } from 'react-icons/cg'
+import ExpenseEdit from '@/app/components/ExpenseEdit'
+import OfficePayEdit from '@/app/components/OfficePayEdit'
+import SupplierPayEdit from '@/app/components/SupplierPayEdit'
+import RetailerPayEdit from '@/app/components/RetailerPayEdit'
 
 const Page = () => {
-    const searchParams = useSearchParams();
-    const access = searchParams.get('access');
-    const [isAuthorized, setIsAuthorized] = useState(false);
+    
+    const router = useRouter();
+      useEffect(() => {
+        const isAdmin = localStorage.getItem("adminAccess");
+        if (!isAdmin) {
+            router.replace("/dashboard"); 
+        }
+    }, []);
 
-    useEffect(() => {
-        setIsAuthorized(access === "granted");
-    }, [access]);
-
-    if (!isAuthorized) {
-        return (
-            <div className="flex items-center justify-center min-h-[calc(100vh-228px)]">
-                <p className='text-red-500 uppercase font-semibold'>Unauthorized access !!!</p>
-            </div>
-        )
-    }
+    // prevent flashing
+    const isAdmin = typeof window !== "undefined" && localStorage.getItem("adminAccess");
+    if (!isAdmin) return null;
+    const logout = () => {
+        localStorage.removeItem("adminAccess");
+        toast.success("Logged out!");
+        router.replace("/dashboard");
+    };
 
     return (
         <div className="container min-h-screen">
+            <div className="flex">
+                <button onClick={logout} className="btn btn-error btn-sm btn-ghost btn-outline">Admin Logout</button>
+            </div>
             <div className="flex w-full items-center justify-center">
                 <div className="tabs tabs-bordered w-full p-3 items-center justify-center">
                     {/* Tab 1: SETTINGS */}
@@ -183,6 +194,47 @@ const Page = () => {
                                     <SrInfo />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <input type="radio" id="payment-tab" name="my_tabs_2" className="hidden peer/payment" />
+                    <label htmlFor="payment-tab" className="tab flex items-center gap-2 cursor-pointer">
+                        <CgEditExposure size={20} /> PAYMENT
+                    </label>
+                    <div className="hidden peer-checked/payment:block tab-content bg-base-100 border p-6 rounded-box">
+                        <div className="flex flex-col gap-3">
+                            <div className="collapse collapse-arrow bg-base-200">
+                                {/* <input type="radio" name="my-accordion-2" /> */}
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">EXPENSE</div>
+                                <div className="collapse-content">
+                                    <ExpenseEdit />
+                                </div>
+                            </div>
+                            <div className="collapse collapse-arrow bg-base-200">
+                                {/* <input type="radio" name="my-accordion-2" /> */}
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">OFFICE PAYMENT</div>
+                                <div className="collapse-content">
+                                    <OfficePayEdit />
+                                </div>
+                            </div>
+                            <div className="collapse collapse-arrow bg-base-200">
+                                {/* <input type="radio" name="my-accordion-2" /> */}
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">SUPPLIER PAYMENT</div>
+                                <div className="collapse-content">
+                                    <SupplierPayEdit />
+                                </div>
+                            </div>
+                            <div className="collapse collapse-arrow bg-base-200">
+                                {/* <input type="radio" name="my-accordion-2" /> */}
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">RETAILER PAYMENT</div>
+                                <div className="collapse-content">
+                                    <RetailerPayEdit />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

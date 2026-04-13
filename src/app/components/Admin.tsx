@@ -28,7 +28,8 @@ const Admin = () => {
 
             if (response.ok) {
                 toast.success("Login successful!");
-                router.push(`/adminstration?access=granted`);
+                localStorage.setItem("adminAccess", "true");
+                router.push("/adminstration");
                 setPassword("");
             } else {
                 const error = await response.text();

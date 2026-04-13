@@ -151,72 +151,75 @@ const Page = () => {
             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">RETAILER LEDGER</h4>
               <h4><CurrentDate /></h4>
             </div>
-            <table className="table table-xs">
-              <thead className="sticky top-16 bg-base-100">
-                <tr>
-                  <th>SN</th>
-                  <th>RETAILER NAME</th>
-                  <th>AREA</th>
-                  <th>PREVIOUS DUE</th>
-                  <th>PREVIOUS PAY</th>
-                  <th>PREVIOUS TOTAL</th>
-                  <th>CURRENT BILL</th>
-                  <th>CURRENT PAY</th>
-                  <th>CURRENT TOTAL</th>
-                  <th>TOTAL DUE</th>
-                  <th>DETAILS</th>
-                  <th>AREA SUMMARY</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(areaGroups)?.map(([area, { products, totalCollection, totalDue }]) => {
-                  return products.map((product, idx) => (
-                    <tr key={`${area}-${idx}`}>
-                      <td>{serialNo++}</td>
-                      <td className="uppercase">{product?.retailerName}</td>
-                      <td className="uppercase">{product?.area}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.todayPreviousPayment.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal - product?.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal - product.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>
-                        <button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">
-                          <CgDetailsMore size={18} />
-                        </button>
-                      </td>
-
-                      {/* Right side column only on first row of each area */}
-                      {idx === 0 && (
-                        <td rowSpan={products.length} className="bg-base-200 text-center">
-                          <div className="border border-slate-700">
-                            <div className="font-bold">{area}</div>
-                            <div>Total Coll: {totalCollection.toLocaleString("en-IN")}</div>
-                            <div>Total Due: {totalDue.toLocaleString("en-IN")}</div>
-                          </div>
+            <div className="w-full overflow-x-auto">
+              <table className="table table-xs table-pin-rows">
+                <thead className="sticky top-0 z-10 bg-base-100 text-xs">
+                  
+                  <tr>
+                    <th>SN</th>
+                    <th>RETAILER NAME</th>
+                    <th>AREA</th>
+                    <th>PREVIOUS DUE</th>
+                    <th>PREVIOUS PAY</th>
+                    <th>PREVIOUS TOTAL</th>
+                    <th>CURRENT BILL</th>
+                    <th>CURRENT PAY</th>
+                    <th>CURRENT TOTAL</th>
+                    <th>TOTAL DUE</th>
+                    <th>DETAILS</th>
+                    <th>AREA SUMMARY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(areaGroups)?.map(([area, { products, totalCollection, totalDue }]) => {
+                    return products.map((product, idx) => (
+                      <tr key={`${area}-${idx}`}>
+                        <td>{serialNo++}</td>
+                        <td className="uppercase whitespace-nowrap">{product?.retailerName}</td>
+                        <td className="uppercase whitespace-nowrap">{product?.area}</td>
+                        <td className="whitespace-nowrap">{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number(product?.todayPreviousPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number((product?.totalProductValue - product?.todayProductValue - product?.previousPaymentTotal - product?.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number(product?.todayProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number(product?.currentPaymentTotal.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number((product?.todayProductValue - product?.currentPaymentTotal).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td className="whitespace-nowrap">{Number((product?.totalProductValue - product?.previousPaymentTotal - product?.currentPaymentTotal - product.todayPreviousPayment).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>
+                          <button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">
+                            <CgDetailsMore size={18} />
+                          </button>
                         </td>
-                      )}
-                    </tr>
-                  ));
-                })}
-              </tbody>
 
-              <tfoot>
-                <tr className="font-semibold text-lg">
-                  <td colSpan={2}></td>
-                  <td>TOTAL</td>
-                  <td>{(totalValue - totalPayment).toLocaleString('en-IN')}</td>
-                  <td>{todayPreviousPayment.toLocaleString('en-IN')}</td>
-                  <td>{(totalValue - totalPayment - todayPreviousPayment).toLocaleString('en-IN')}</td>
-                  <td>{currentValue.toLocaleString('en-IN')}</td>
-                  <td>{currentPayment.toLocaleString('en-IN')}</td>
-                  <td>{(currentValue - currentPayment).toLocaleString('en-IN')}</td>
-                  <td>{totalBalance.toLocaleString('en-IN')}</td>
-                </tr>
-              </tfoot>
-            </table>
+                        {/* Right side column only on first row of each area */}
+                        {idx === 0 && (
+                          <td rowSpan={products.length} className="bg-base-200 text-center">
+                            <div className="border border-slate-700">
+                              <div className="font-bold">{area}</div>
+                              <div>Total Coll: {totalCollection.toLocaleString("en-IN")}</div>
+                              <div>Total Due: {totalDue.toLocaleString("en-IN")}</div>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ));
+                  })}
+                </tbody>
+
+                <tfoot>
+                  <tr className="font-semibold text-lg">
+                    <td colSpan={2}></td>
+                    <td>TOTAL</td>
+                    <td>{(totalValue - totalPayment).toLocaleString('en-IN')}</td>
+                    <td>{todayPreviousPayment.toLocaleString('en-IN')}</td>
+                    <td>{(totalValue - totalPayment - todayPreviousPayment).toLocaleString('en-IN')}</td>
+                    <td>{currentValue.toLocaleString('en-IN')}</td>
+                    <td>{currentPayment.toLocaleString('en-IN')}</td>
+                    <td>{(currentValue - currentPayment).toLocaleString('en-IN')}</td>
+                    <td>{totalBalance.toLocaleString('en-IN')}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
       </div>

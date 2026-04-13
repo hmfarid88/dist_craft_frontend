@@ -347,9 +347,9 @@ const Page: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-center w-full p-5">
-            <div className="overflow-x-auto max-h-96">
-              <table className="table table-pin-rows">
+          <div className="flex items-center justify-center w-full p-5 overflow-x-auto">
+            <div className="w-full max-h-96">
+              <table className="table table-pin-rows min-w-full">
                 <thead>
                   <tr>
                     <th>SN</th>
@@ -434,7 +434,7 @@ const Page: React.FC = () => {
                 </button>
               </div>
               <div className="w-full overflow-x-auto min-h-96">
-                <table className="table table-pin-rows w-full">
+                <table className="table table-pin-rows min-w-full">
                   <thead>
                     <tr>
                       <th>SN</th>

@@ -39,7 +39,8 @@ const Page = () => {
   const [soldProducts, setSoldProducts] = useState<Product[]>([]);
   const [filterCriteria, setFilterCriteria] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [groupByProduct, setGroupByProduct] = useState(false);  
+  const [groupByProduct, setGroupByProduct] = useState(false);
+  const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer'>('none');
   const router = useRouter();
 
   useEffect(() => {
@@ -51,15 +52,55 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
-  
+
   const findInvoice = (cid: string) => {
     router.push(`/invoice?cid=${cid}`);
   };
   //added for group
-  const groupedProducts = groupByProduct
+  const groupedProducts =
+    groupMode === 'product'
+      ? Object.values(
+        filteredProducts.reduce((acc, item) => {
+          const key = item.productName; // grouping key
+
+          if (!acc[key]) {
+            acc[key] = {
+              productName: item.productName,
+              category: item.category,
+              brand: item.brand,
+
+              count: 1,
+              totalSprice: item.sprice,
+              totalDiscount: item.discount,
+              totalOffer: item.offer,
+            };
+          } else {
+            acc[key].count += 1;
+            acc[key].totalSprice += item.sprice;
+            acc[key].totalDiscount += item.discount;
+            acc[key].totalOffer += item.offer;
+          }
+
+          return acc;
+        }, {} as Record<
+          string,
+          {
+            productName: string;
+            category: string;
+            brand: string;
+            count: number;
+            totalSprice: number;
+            totalDiscount: number;
+            totalOffer: number;
+          }
+        >)
+      )
+      : [];
+  const groupedByCustomer = groupMode === 'customer'
     ? Object.values(
       filteredProducts.reduce((acc, item) => {
-        const key = item.productName;
+        const key = item.cname; // group by customer name
+
         if (!acc[key]) {
           acc[key] = {
             ...item,
@@ -74,11 +115,16 @@ const Page = () => {
           acc[key].totalDiscount += item.discount;
           acc[key].totalOffer += item.offer;
         }
+
         return acc;
-      }, {} as Record<string, Product & { count: number; totalSprice: number; totalDiscount: number; totalOffer: number }>)
+      }, {} as Record<string, Product & {
+        count: number;
+        totalSprice: number;
+        totalDiscount: number;
+        totalOffer: number;
+      }>)
     )
     : [];
-
 
   useEffect(() => {
     const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -104,24 +150,34 @@ const Page = () => {
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
-  
+
   //added for group
-  const totalQty = groupByProduct
-    ? groupedProducts.reduce((sum, p) => sum + p.count, 0)
-    : new Set(filteredProducts.map(p => p.productno)).size;
+  const activeData =
+    groupMode === 'product'
+      ? groupedProducts
+      : groupMode === 'customer'
+        ? groupedByCustomer
+        : filteredProducts;
 
-  const totalSprice = groupByProduct
-    ? groupedProducts.reduce((sum, p) => sum + p.totalSprice, 0)
-    : filteredProducts.reduce((sum, p) => sum + p.sprice, 0);
+  const totalQty =
+    groupMode === 'none'
+      ? new Set(filteredProducts.map(p => p.productno)).size
+      : activeData.reduce((sum, p: any) => sum + p.count, 0);
 
-  const totalDiscount = groupByProduct
-    ? groupedProducts.reduce((sum, p) => sum + p.totalDiscount, 0)
-    : filteredProducts.reduce((sum, p) => sum + p.discount, 0);
+  const totalSprice = activeData.reduce(
+    (sum, p: any) => sum + (p.totalSprice ?? p.sprice),
+    0
+  );
 
-  const totalOffer = groupByProduct
-    ? groupedProducts.reduce((sum, p) => sum + p.totalOffer, 0)
-    : filteredProducts.reduce((sum, p) => sum + p.offer, 0);
+  const totalDiscount = activeData.reduce(
+    (sum, p: any) => sum + (p.totalDiscount ?? p.discount),
+    0
+  );
 
+  const totalOffer = activeData.reduce(
+    (sum, p: any) => sum + (p.totalOffer ?? p.offer),
+    0
+  );
   return (
     <div className="container-2xl min-h-[calc(100vh-228px)]">
       <div className="flex justify-center p-5 gap-10">
@@ -140,20 +196,33 @@ const Page = () => {
           <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
         </div>
       </div>
+      <div className="flex gap-2 p-5 w-full justify-end">
+        <button
+          onClick={() => setGroupMode('none')}
+          className="btn btn-sm btn-outline"
+        >
+          Details
+        </button>
+
+        <button
+          onClick={() => setGroupMode('product')}
+          className="btn btn-sm btn-outline btn-primary"
+        >
+          By Product
+        </button>
+
+        <button
+          onClick={() => setGroupMode('customer')}
+          className="btn btn-sm btn-outline btn-secondary"
+        >
+          By Customer
+        </button>
+      </div>
       <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
         <CompanyInfo />
         <h4 className="font-bold">SALE REPORT</h4>
         <h4 className="pb-5"><CurrentDate /></h4>
         <div className="flex flex-col items-center justify-center">
-          {/* added for group */}
-          <div className="flex w-full justify-end p-5">
-            <button
-              onClick={() => setGroupByProduct(!groupByProduct)}
-              className="btn btn-sm btn-outline btn-primary"
-            >
-              {groupByProduct ? "Details View" : "Group View"}
-            </button>
-          </div>
           <table className="table table-sm">
             <thead className="sticky top-16 bg-base-100">
               <tr>
@@ -172,44 +241,117 @@ const Page = () => {
                 <th>TOTAL</th>
               </tr>
             </thead>
-           
+
+            {/* <tbody>
+                {!groupByProduct
+                  ? filteredProducts?.map((product, index) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td>{product.date}</td>
+                      <td>{product.time}</td>
+                      <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
+                      <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
+                      <td className="capitalize">{product.soldby}</td>
+                      <td className="capitalize">{product.saleNote}</td>
+                      <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
+                      <td>{product.productno}</td>
+                      <td>{product.sprice}</td>
+                      <td>{product.discount}</td>
+                      <td>{product.offer}</td>
+                      <td>{product.sprice - product.discount - product.offer}</td>
+                    </tr>
+                  ))
+                  : groupedProducts.map((product, index) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td colSpan={2}>Grouped by Product</td>
+                      <td className="uppercase">{product.cid}</td>
+                      <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
+                      <td className="capitalize">{product.soldby}</td>
+                      <td className="capitalize">{product.saleNote}</td>
+                      <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
+                      <td>{product.count} pcs</td>
+                      <td>{product.totalSprice}</td>
+                      <td>{product.totalDiscount}</td>
+                      <td>{product.totalOffer}</td>
+                      <td>{product.totalSprice - product.totalDiscount - product.totalOffer}</td>
+                    </tr>
+                  ))}
+              </tbody> */}
             <tbody>
-              {!groupByProduct
-                ? filteredProducts?.map((product, index) => (
+              {groupMode === 'none' &&
+                filteredProducts.map((product, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{product.date}</td>
                     <td>{product.time}</td>
-                    <td className="uppercase"><button onClick={() => findInvoice(product.cid)} className="btn btn-link uppercase">{product.cid}</button></td>
-                    <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
-                    <td className="capitalize">{product.soldby}</td>
-                    <td className="capitalize">{product.saleNote}</td>
-                    <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
+                    <td>
+                      <button onClick={() => findInvoice(product.cid)} className="btn btn-link">
+                        {product.cid}
+                      </button>
+                    </td>
+                    <td>{product.cname} {product.phoneNumber}</td>
+                    <td>{product.soldby}</td>
+                    <td>{product.saleNote}</td>
+                    <td>{product.productName}</td>
                     <td>{product.productno}</td>
                     <td>{product.sprice}</td>
                     <td>{product.discount}</td>
                     <td>{product.offer}</td>
                     <td>{product.sprice - product.discount - product.offer}</td>
                   </tr>
-                ))
-                : groupedProducts.map((product, index) => (
+                ))}
+
+              {groupMode === 'product' &&
+                groupedProducts.map((p, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
-                    <td colSpan={2}>Grouped by Product</td>
-                    <td className="uppercase">{product.cid}</td>
-                    <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
-                    <td className="capitalize">{product.soldby}</td>
-                    <td className="capitalize">{product.saleNote}</td>
-                    <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
-                    <td>{product.count} pcs</td>
-                    <td>{product.totalSprice}</td>
-                    <td>{product.totalDiscount}</td>
-                    <td>{product.totalOffer}</td>
-                    <td>{product.totalSprice - product.totalDiscount - product.totalOffer}</td>
+
+                    <td colSpan={2}>—</td> {/* SALE DATE + TIME */}
+                    <td>—</td> {/* INVOICE */}
+
+                    <td>—</td> {/* CUSTOMER */}
+                    <td>—</td> {/* SOLD BY */}
+                    <td>—</td> {/* NOTE */}
+
+                    <td>
+                      {p.category}, {p.brand}, {p.productName}
+                    </td>
+
+                    <td>{p.count} pcs</td>
+                    <td>{p.totalSprice}</td>
+                    <td>{p.totalDiscount}</td>
+                    <td>{p.totalOffer}</td>
+                    <td>{p.totalSprice - p.totalDiscount - p.totalOffer}</td>
+                  </tr>
+                ))}
+
+              {groupMode === 'customer' &&
+                groupedByCustomer.map((p, index) => (
+                  <tr key={index}>
+                    <th>{index + 1}</th>
+
+                    <td colSpan={2}>—</td> {/* DATE + TIME */}
+                    <td>—</td> {/* INVOICE */}
+
+                    <td>
+                      {p.cname} <br />
+                      {p.phoneNumber}
+                    </td>
+
+                    <td>—</td> {/* SOLD BY */}
+                    <td>—</td> {/* NOTE */}
+
+                    <td>—</td> {/* PRODUCT */}
+
+                    <td>{p.count} pcs</td>
+                    <td>{p.totalSprice}</td>
+                    <td>{p.totalDiscount}</td>
+                    <td>{p.totalOffer}</td>
+                    <td>{p.totalSprice - p.totalDiscount - p.totalOffer}</td>
                   </tr>
                 ))}
             </tbody>
-
             <tfoot>
               <tr className="font-bold text-sm">
                 <td colSpan={7}></td>
@@ -222,9 +364,11 @@ const Page = () => {
               </tr>
             </tfoot>
           </table>
+
         </div>
       </div>
     </div>
+
   )
 }
 
