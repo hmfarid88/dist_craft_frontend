@@ -68,7 +68,6 @@ useEffect(() => {
   const year = futureDate.getFullYear();
   const month = String(futureDate.getMonth() + 1).padStart(2, '0');
   const day = String(futureDate.getDate()).padStart(2, '0');
-
   const formattedDate = `${year}-${month}-${day}`;
 
   setMaxDate(formattedDate);
