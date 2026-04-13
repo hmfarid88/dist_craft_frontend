@@ -45,16 +45,39 @@ const Page: React.FC = () => {
 
   const [soldby, setSoldby] = useState("");
 
+  // const [maxDate, setMaxDate] = useState("");
+  // useEffect(() => {
+  //   const today = new Date();
+  //   const year = today.getFullYear();
+  //   const month = String(today.getMonth() + 1).padStart(2, '0');
+  //   const day = String(today.getDate()).padStart(2, '0');
+  //   const formattedDate = `${year}-${month}-${day}`;
+  //   setMaxDate(formattedDate);
+  //   setDate(formattedDate);
+  // }, []);
+
   const [maxDate, setMaxDate] = useState("");
-  useEffect(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    setMaxDate(formattedDate);
-    setDate(formattedDate);
-  }, []);
+
+useEffect(() => {
+  const today = new Date();
+
+  // Add 7 days
+  const futureDate = new Date();
+  futureDate.setDate(today.getDate() + 7);
+
+  const year = futureDate.getFullYear();
+  const month = String(futureDate.getMonth() + 1).padStart(2, '0');
+  const day = String(futureDate.getDate()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+
+  setMaxDate(formattedDate);
+
+  // If you still want today's date as default
+  const todayFormatted = today.toISOString().split("T")[0];
+  setDate(todayFormatted);
+
+}, []);
   const contentToPrint = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
