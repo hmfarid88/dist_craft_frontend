@@ -7,6 +7,7 @@ import DateToDate from "@/app/components/DateToDate";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import ExcelExportButton from "@/app/components/ExcellGeneration";
 import CompanyInfo from "@/app/components/CompanyInfo";
+import { useRouter } from "next/navigation";
 
 interface Product {
     cname: string;
@@ -28,14 +29,19 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const router = useRouter();
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
+    const findInvoice = (cid: string) => {
+        router.push(`/invoice?cid=${cid}`);
+    };
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer'>('none');
+
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/getMonthlyVendorSale?username=${username}`)
             .then(response => response.json())
@@ -46,6 +52,75 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
+    //added for group
+    const groupedProducts =
+        groupMode === 'product'
+            ? Object.values(
+                filteredProducts.reduce((acc, item) => {
+                    const key = item.productName; // grouping key
+
+                    if (!acc[key]) {
+                        acc[key] = {
+                            productName: item.productName,
+                            category: item.category,
+                            brand: item.brand,
+
+                            count: 1,
+                            totalSprice: item.sprice,
+                            totalPprice: item.pprice,
+                         
+                        };
+                    } else {
+                        acc[key].count += 1;
+                        acc[key].totalSprice += item.sprice;
+                        acc[key].totalPprice += item.pprice;
+                        
+                    }
+
+                    return acc;
+                }, {} as Record<
+                    string,
+                    {
+                        productName: string;
+                        category: string;
+                        brand: string;
+                        count: number;
+                        totalSprice: number;
+                        totalPprice: number;
+                    
+                    }
+                >)
+            )
+            : [];
+    const groupedByCustomer = groupMode === 'customer'
+        ? Object.values(
+            filteredProducts.reduce((acc, item) => {
+                const key = item.cname; // group by customer name
+
+                if (!acc[key]) {
+                    acc[key] = {
+                        ...item,
+                        count: 1,
+                        totalSprice: item.sprice,
+                        totalPprice: item.pprice,
+                      
+                    };
+                } else {
+                    acc[key].count += 1;
+                    acc[key].totalSprice += item.sprice;
+                    acc[key].totalPprice += item.pprice;
+                 
+                }
+
+                return acc;
+            }, {} as Record<string, Product & {
+                count: number;
+                totalSprice: number;
+                totalPprice: number;
+             
+            }>)
+        )
+        : [];
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -70,15 +145,28 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-    const totalQty = new Set(filteredProducts.map(product => product.productno)).size;
+    
+    //added for group
+    const activeData =
+        groupMode === 'product'
+            ? groupedProducts
+            : groupMode === 'customer'
+                ? groupedByCustomer
+                : filteredProducts;
 
-    const totalPprice = filteredProducts.reduce((total, product) => {
-        return total + product.pprice;
-    }, 0);
+    const totalQty =
+        groupMode === 'none'
+            ? new Set(filteredProducts.map(p => p.productno)).size
+            : activeData.reduce((sum, p: any) => sum + p.count, 0);
 
-    const totalSprice = filteredProducts.reduce((total, product) => {
-        return total + product.sprice;
-    }, 0);
+    const totalPprice = activeData.reduce(
+        (sum, p: any) => sum + (p.totalPprice ?? p.pprice),
+        0
+    );
+    const totalSprice = activeData.reduce(
+        (sum, p: any) => sum + (p.totalSprice ?? p.sprice),
+        0
+    );
 
 
     return (
@@ -98,6 +186,28 @@ const Page = () => {
                     <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                 </div>
             </div>
+            <div className="flex gap-2 p-5 w-full justify-end">
+                <button
+                    onClick={() => setGroupMode('none')}
+                    className="btn btn-sm btn-outline"
+                >
+                    Details
+                </button>
+
+                <button
+                    onClick={() => setGroupMode('product')}
+                    className="btn btn-sm btn-outline btn-primary"
+                >
+                    By Product
+                </button>
+
+                <button
+                    onClick={() => setGroupMode('customer')}
+                    className="btn btn-sm btn-outline btn-secondary"
+                >
+                    By Customer
+                </button>
+            </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
                 <CompanyInfo />
                 <h4 className="font-bold">VENDOR SALE REPORT</h4>
@@ -116,10 +226,9 @@ const Page = () => {
                                 <th>PRODUCT NO</th>
                                 <th>RP VALUE</th>
                                 <th>MRP VALUE</th>
-
                             </tr>
                         </thead>
-                        <tbody>
+                        {/* <tbody>
                             {filteredProducts?.map((product, index) => (
                                 <tr key={index}>
                                     <th>{index + 1}</th>
@@ -135,7 +244,77 @@ const Page = () => {
 
                                 </tr>
                             ))}
+                        </tbody> */}
+                        <tbody>
+                            {groupMode === 'none' &&
+                                filteredProducts.map((product, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+                                        <td>{product.date}</td>
+                                        <td>{product.time}</td>
+                                        <td>
+                                            <button onClick={() => findInvoice(product.cid)} className="btn btn-link">
+                                                {product.cid}
+                                            </button>
+                                        </td>
+                                        <td>{product.cname} {product.phoneNumber}</td>
+                                        <td>{product.saleNote}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.productno}</td>
+                                        <td>{product.pprice}</td>
+                                        <td>{product.sprice}</td>
+
+                                    </tr>
+                                ))}
+
+                            {groupMode === 'product' &&
+                                groupedProducts.map((p, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+
+                                        <td>—</td> {/* SALE DATE + TIME */}
+                                        <td>—</td> {/* INVOICE */}
+
+                                        <td>—</td> {/* CUSTOMER */}
+                                        <td>—</td> {/* SOLD BY */}
+                                        <td>—</td> {/* NOTE */}
+
+                                        <td>
+                                            {p.category}, {p.brand}, {p.productName}
+                                        </td>
+
+                                        <td>{p.count} pcs</td>
+                                        <td>{p.totalPprice}</td>
+                                        <td>{p.totalSprice}</td>
+
+                                    </tr>
+                                ))}
+
+                            {groupMode === 'customer' &&
+                                groupedByCustomer.map((p, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+
+                                        <td>—</td> {/* DATE + TIME */}
+                                        <td>—</td> {/* INVOICE */}
+                                        <td>—</td> {/* SOLD BY */}
+                                        <td>
+                                            {p.cname} <br />
+                                            {p.phoneNumber}
+                                        </td>
+
+                                        <td>—</td> {/* NOTE */}
+
+                                        <td>—</td> {/* PRODUCT */}
+
+                                        <td>{p.count} pcs</td>
+                                        <td>{p.totalPprice}</td>
+                                        <td>{p.totalSprice}</td>
+
+                                    </tr>
+                                ))}
                         </tbody>
+                    
                         <tfoot>
                             <tr className="font-bold text-sm">
                                 <td colSpan={6}></td>
