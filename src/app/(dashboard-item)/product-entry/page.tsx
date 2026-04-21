@@ -33,8 +33,9 @@ const Page = () => {
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [isGroupView, setIsGroupView] = useState(false);
 
-     useEffect(() => {
+    useEffect(() => {
         fetch(`${apiBaseUrl}/api/getMonthlyProductEntry?username=${username}`)
             .then(response => response.json())
             .then(data => {
@@ -44,11 +45,28 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-     useEffect(() => {
-            const searchWords = filterCriteria.toLowerCase().split(" ");
-          
-            const filtered = soldProducts.filter(product =>
-              searchWords.every(word =>
+    const groupedData = filteredProducts.reduce((acc: any, item) => {
+        const key = item.productName;
+
+        if (!acc[key]) {
+            acc[key] = {
+                totalQty: 0,
+                totalPprice: 0,
+                totalSprice: 0
+            };
+        }
+
+        acc[key].totalQty += 1;
+        acc[key].totalPprice += item.pprice;
+        acc[key].totalSprice += item.sprice;
+
+        return acc;
+    }, {});
+    useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+
+        const filtered = soldProducts.filter(product =>
+            searchWords.every(word =>
                 (product.category?.toLowerCase().includes(word) || '') ||
                 (product.brand?.toLowerCase().includes(word) || '') ||
                 (product.date?.toLowerCase().includes(word) || '') ||
@@ -57,11 +75,11 @@ const Page = () => {
                 (product.supplier?.toLowerCase().includes(word) || '') ||
                 (product.supplierInvoice?.toLowerCase().includes(word) || '') ||
                 (product.productName?.toLowerCase().includes(word) || '')
-              )
-            );
-          
-            setFilteredProducts(filtered);
-          }, [filterCriteria, soldProducts]);
+            )
+        );
+
+        setFilteredProducts(filtered);
+    }, [filterCriteria, soldProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
@@ -76,6 +94,15 @@ const Page = () => {
         return total + product.pprice;
     }, 0);
 
+    const groupTotals = Object.values(groupedData).reduce(
+        (acc: any, item: any) => {
+            acc.totalQty += item.totalQty;
+            acc.totalPprice += item.totalPprice;
+            acc.totalSprice += item.totalSprice;
+            return acc;
+        },
+        { totalQty: 0, totalPprice: 0, totalSprice: 0 }
+    );
 
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
@@ -92,33 +119,55 @@ const Page = () => {
                 </label>
                 <div className="flex gap-3">
                     <ExcelExportButton tableRef={contentToPrint} fileName="product_entry" />
-                <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                 </div>
             </div>
+            <div className="flex justify-end p-5">
+                <button
+                    onClick={() => setIsGroupView(prev => !prev)}
+                    className="btn btn-sm btn-primary"
+                >
+                    {isGroupView ? "Details View" : "Group View"}
+                </button>
+            </div>
+
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
-            <CompanyInfo />
+                <CompanyInfo />
                 <h4 className="font-bold">PRODUCT ENTRY REPORT</h4>
                 <h4 className="pb-5"><CurrentMonthYear /></h4>
                 <div className="flex items-center justify-center">
                     <table className="table table-sm">
-                    <thead className="sticky top-16 bg-base-100">
-                            <tr>
-                                <th>SN</th>
-                                <th>ENTRY DATE</th>
-                                <th>ENTRY TIME</th>
-                                <th>INVOICE NO</th>
-                                <th>SUPPLIER</th>
-                                <th>CATEGORY</th>
-                                <th>BRAND</th>
-                                <th>PRODUCT</th>
-                                <th>COLOR</th>
-                                <th>PRODUCT NO</th>
-                                <th>PURCHASE PRICE</th>
-                                <th>SALE PRICE</th>
-                            </tr>
+
+                        <thead className="sticky top-16 bg-base-100">
+                            {!isGroupView ? (
+                                <tr>
+                                    <th>SN</th>
+                                    <th>ENTRY DATE</th>
+                                    <th>ENTRY TIME</th>
+                                    <th>INVOICE NO</th>
+                                    <th>SUPPLIER</th>
+                                    <th>CATEGORY</th>
+                                    <th>BRAND</th>
+                                    <th>PRODUCT</th>
+                                    <th>COLOR</th>
+                                    <th>PRODUCT NO</th>
+                                    <th>PURCHASE PRICE</th>
+                                    <th>SALE PRICE</th>
+                                </tr>
+                            ) : (
+                                <tr>
+                                    <th>SN</th>
+                                    <th colSpan={6}>PRODUCT NAME</th>
+                                    <th>QTY</th>
+                                    <th>PURCHASE TOTAL</th>
+                                    <th>SALE TOTAL</th>
+                                </tr>
+                            )}
                         </thead>
+
                         <tbody>
-                            {filteredProducts?.map((product, index) => (
+                            {/* NORMAL VIEW */}
+                            {!isGroupView && filteredProducts.map((product, index) => (
                                 <tr key={index}>
                                     <th>{index + 1}</th>
                                     <td>{product.date}</td>
@@ -132,19 +181,39 @@ const Page = () => {
                                     <td>{product.productno}</td>
                                     <td>{product.pprice}</td>
                                     <td>{product.sprice}</td>
-
                                 </tr>
                             ))}
+
+                            {/* GROUP VIEW */}
+                            {isGroupView &&
+                                Object.entries(groupedData).map(([productName, data]: any, index) => (
+                                    <tr key={index} className="font-semibold">
+                                        <td>{index + 1}</td>
+                                        <td colSpan={6}>{productName}</td>
+                                        <td>{data.totalQty}</td>
+                                        <td>{Number(data.totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(data.totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                    </tr>
+                                ))
+                            }
                         </tbody>
                         <tfoot>
-                            <tr className="font-bold text-sm">
-                                <td colSpan={8}></td>
-                                <td>TOTAL</td>
-                                <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number(totalSprice.toFixed(2)).toLocaleString('en-IN')}</td>
-
-                            </tr>
+                            {!isGroupView ? (
+                                <tr className="font-bold text-sm">
+                                    <td colSpan={8}></td>
+                                    <td>TOTAL</td>
+                                    <td>{totalQty.toLocaleString('en-IN')}</td>
+                                    <td>{totalPprice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td>{totalSprice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                </tr>
+                            ) : (
+                                <tr className="font-bold text-sm">
+                                    <td colSpan={7}>GRAND TOTAL</td>
+                                    <td>{(groupTotals as { totalQty: number }).totalQty}</td>
+                                    <td>{(groupTotals as { totalPprice: number }).totalPprice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td>{(groupTotals as { totalSprice: number }).totalSprice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                </tr>
+                            )}
                         </tfoot>
                     </table>
                 </div>
