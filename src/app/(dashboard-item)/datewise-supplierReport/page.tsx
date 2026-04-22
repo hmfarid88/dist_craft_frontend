@@ -133,7 +133,7 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
                                             <td className="uppercase break-words max-w-[150px]">{product.invoice}</td>
-                                            <td className="uppercase break-words max-w-[150px]">{product?.note}</td>
+                                            <td className="uppercase break-words max-w-[150px]">{product?.note ?? "N/A"}</td>
                                             <td>{Number(product?.qty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.pvalue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.svalue.toFixed(2)).toLocaleString('en-IN')}</td>
