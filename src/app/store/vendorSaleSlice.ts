@@ -35,7 +35,36 @@ export const vendorSaleSlice = createSlice({
             }
 
         },
-       
+       addProductsBulk: (state, action: PayloadAction<Product[]>) => {
+
+            const newProducts: Product[] = [];
+            const duplicateProducts: string[] = [];
+
+            action.payload.forEach((product) => {
+
+                const exist = state.products.find(
+                    (pro) =>
+                        pro.username === product.username &&
+                        pro.productno === product.productno
+                );
+
+                if (exist) {
+                    duplicateProducts.push(product.productno);
+                } else {
+                    newProducts.push(product);
+                }
+            });
+
+            state.products.push(...newProducts);
+
+            if (duplicateProducts.length > 0) {
+                swal(
+                    "Duplicate Products",
+                    `Already exist: ${duplicateProducts.join(", ")}`,
+                    "warning"
+                );
+            }
+        },
         deleteProduct: (state, action) => {
             const id = action.payload;
             state.products = state.products.filter((product) => product.id !== id);
@@ -54,6 +83,6 @@ export const selectTotalQuantity = createSelector(
     (state: { vendorSale: VendorSaleState }) => state.vendorSale.products,
     (products) => products.reduce((total, product) => total + 1, 0)
 );
-export const { addProducts, deleteProduct, deleteAllProducts } = vendorSaleSlice.actions;
+export const { addProducts, deleteProduct, deleteAllProducts, addProductsBulk } = vendorSaleSlice.actions;
 
 export default vendorSaleSlice.reducer;

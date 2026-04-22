@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity } from "@/app/store/vendorSaleSlice";
+import { addProducts, deleteAllProducts, deleteProduct, selectTotalQuantity, addProductsBulk } from "@/app/store/vendorSaleSlice";
 import Select from "react-select";
 import { uid } from 'uid';
 import { toast } from "react-toastify";
@@ -31,6 +31,8 @@ const Page: React.FC = () => {
     const cid = uid();
     const selectRef = useRef<any>(null);
     const [maxDate, setMaxDate] = useState("");
+    const [bulkInput, setBulkInput] = useState("");
+
     useEffect(() => {
         const today = new Date();
         const year = today.getFullYear();
@@ -57,7 +59,49 @@ const Page: React.FC = () => {
     const handleDeleteProduct = (id: any) => {
         dispatch(deleteProduct(id));
     };
+    const handleBulkAdd = async () => {
 
+        if (!bulkInput.trim()) return;
+
+        // split by space, comma, or newline
+        const productNos = bulkInput
+            .split(/[\s,]+/)
+            .map((p) => p.trim())
+            .filter(Boolean);
+
+        try {
+
+            const response = await fetch(`${apiBaseUrl}/api/getProductsByProductNos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(productNos)
+            });
+
+            if (!response.ok) {
+                toast.error("Error fetching products");
+                return;
+            }
+
+            const products = await response.json();
+
+            const saleProducts = products.map((data: any) => ({
+                id: uid(),
+                proId: data.proId,
+                brand: data.brand,
+                color: data.color,
+                productName: data.productName,
+                productno: data.productno,
+                pprice: data.pprice,
+                username: username,
+            }));
+            dispatch(addProductsBulk(saleProducts));
+            setBulkInput("");
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const productInfo = saleProducts.map(product => ({
         proId: product.proId,
         saleType: 'vendor',
@@ -66,7 +110,7 @@ const Page: React.FC = () => {
         offer: 0,
         date: date,
         cid: cid,
-        saleNote:saleNote,
+        saleNote: saleNote,
         username: username
 
     }));
@@ -147,54 +191,74 @@ const Page: React.FC = () => {
                 <div className="flex flex-col w-full">
                     <div className="divider divider-accent tracking-widest font-bold p-5">VENDOR SALE AREA</div>
                 </div>
-                <div className="flex gap-2 items-center justify-center z-10">
-                    <Select
-                        className="text-black w-64 md:w-96"
-                        ref={selectRef}
-                        autoFocus={true}
-                        value={selectedProidOption}
-                        onChange={async (selectedOption: any) => {
-                            if (!selectedOption) return;
-                            setSelectedProidOption(selectedOption);
+                <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
+                    <div className="flex gap-2">
+                        <Select
+                            className="text-black w-64 md:w-96 z-10 mt-2"
+                            ref={selectRef}
+                            autoFocus={true}
+                            value={selectedProidOption}
+                            onChange={async (selectedOption: any) => {
+                                if (!selectedOption) return;
+                                setSelectedProidOption(selectedOption);
 
-                            try {
-                                const response = await fetch(`${apiBaseUrl}/api/getSingleProduct?proId=${selectedOption.value}`);
-                                if (!response.ok) {
-                                    toast.error("Error fetching product data");
-                                    return;
+                                try {
+                                    const response = await fetch(`${apiBaseUrl}/api/getSingleProduct?proId=${selectedOption.value}`);
+                                    if (!response.ok) {
+                                        toast.error("Error fetching product data");
+                                        return;
+                                    }
+                                    const data = await response.json();
+                                    const productToVendor = {
+                                        id: uid(),
+                                        proId: data.proId,
+                                        brand: data.brand,
+                                        color: data.color,
+                                        productName: data.productName,
+                                        productno: data.productno,
+                                        pprice: data.pprice,
+                                        username: username,
+                                    };
+
+                                    dispatch(addProducts(productToVendor));
+                                    setSelectedProidOption(null);
+                                    if (selectRef.current) {
+                                        selectRef.current.focus();
+                                    }
+                                } catch (error) {
+                                    console.error('Error fetching product:', error);
+
                                 }
-
-                                const data = await response.json();
-                                const productToVendor = {
-                                    id: uid(),
-                                    proId: data.proId,
-                                    brand: data.brand,
-                                    color: data.color,
-                                    productName: data.productName,
-                                    productno: data.productno,
-                                    pprice: data.pprice,
-                                    username: username,
-                                };
-
-                                dispatch(addProducts(productToVendor));
-                                setSelectedProidOption(null);
-                                if (selectRef.current) {
-                                    selectRef.current.focus();
-                                }
-                            } catch (error) {
-                                console.error('Error fetching product:', error);
-
-                            }
-                        }}
-                        options={productOption}
-                    />
-                    <div className="flex">
-                        <div className="avatar-group -space-x-6 rtl:space-x-reverse">
-                            <div className="avatar placeholder">
-                                <div className="bg-neutral text-neutral-content w-12">
-                                    <span>{totalQuantity}</span>
+                            }}
+                            options={productOption}
+                        />
+                        <div className="flex">
+                            <div className="avatar-group -space-x-6 rtl:space-x-reverse">
+                                <div className="avatar placeholder">
+                                    <div className="bg-neutral text-neutral-content w-12">
+                                        <span>{totalQuantity}</span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div className="collapse collapse-arrow bg-base-200 max-w-64">
+                        <input type="checkbox" className="peer" />
+                        <div className="collapse-title text-sm font-medium">Bulk Sale</div>
+                        <div className="collapse-content">
+                            <textarea
+                                className="textarea textarea-bordered p-2"
+                                placeholder="Input product numbers"
+                                value={bulkInput}
+                                onChange={(e) => setBulkInput(e.target.value)}
+                            />
+
+                            <button
+                                className="btn btn-primary btn-sm mt-2"
+                                onClick={handleBulkAdd}
+                            >
+                                Add Products
+                            </button>
                         </div>
                     </div>
                 </div>
