@@ -28,11 +28,11 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-const router = useRouter();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
- const findInvoice = (cid: string) => {
+    const findInvoice = (cid: string) => {
         router.push(`/invoice?cid=${cid}`);
     };
     const contentToPrint = useRef(null);
@@ -42,7 +42,7 @@ const router = useRouter();
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-    const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer'>('none');
+    const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer' | 'note'>('none');
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/getDatewiseVendorSale?username=${username}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
@@ -52,7 +52,7 @@ const router = useRouter();
             })
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, startDate, endDate]);
-  //added for group
+    //added for group
     const groupedProducts =
         groupMode === 'product'
             ? Object.values(
@@ -68,13 +68,13 @@ const router = useRouter();
                             count: 1,
                             totalSprice: item.sprice,
                             totalPprice: item.pprice,
-                         
+
                         };
                     } else {
                         acc[key].count += 1;
                         acc[key].totalSprice += item.sprice;
                         acc[key].totalPprice += item.pprice;
-                        
+
                     }
 
                     return acc;
@@ -87,7 +87,7 @@ const router = useRouter();
                         count: number;
                         totalSprice: number;
                         totalPprice: number;
-                    
+
                     }
                 >)
             )
@@ -103,13 +103,13 @@ const router = useRouter();
                         count: 1,
                         totalSprice: item.sprice,
                         totalPprice: item.pprice,
-                      
+
                     };
                 } else {
                     acc[key].count += 1;
                     acc[key].totalSprice += item.sprice;
                     acc[key].totalPprice += item.pprice;
-                 
+
                 }
 
                 return acc;
@@ -117,11 +117,41 @@ const router = useRouter();
                 count: number;
                 totalSprice: number;
                 totalPprice: number;
-             
+
             }>)
         )
         : [];
+    const groupedByNote =
+        groupMode === 'note'
+            ? Object.values(
+                filteredProducts.reduce((acc, item) => {
+                    const key = item.saleNote || 'No Note';
 
+                    if (!acc[key]) {
+                        acc[key] = {
+                            saleNote: key,
+                            count: 1,
+                            totalSprice: item.sprice,
+                            totalPprice: item.pprice,
+                        };
+                    } else {
+                        acc[key].count += 1;
+                        acc[key].totalSprice += item.sprice;
+                        acc[key].totalPprice += item.pprice;
+                    }
+
+                    return acc;
+                }, {} as Record<
+                    string,
+                    {
+                        saleNote: string;
+                        count: number;
+                        totalSprice: number;
+                        totalPprice: number;
+                    }
+                >)
+            )
+            : [];
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
 
@@ -145,17 +175,23 @@ const router = useRouter();
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-   //added for group
+    //added for group
     const activeData =
         groupMode === 'product'
             ? groupedProducts
             : groupMode === 'customer'
                 ? groupedByCustomer
-                : filteredProducts;
+                : groupMode === 'note'
+                    ? groupedByNote
+                    : filteredProducts;
 
+    // const totalQty =
+    //     groupMode === 'none'
+    //         ? new Set(filteredProducts.map(p => p.productno)).size
+    //         : activeData.reduce((sum, p: any) => sum + p.count, 0);
     const totalQty =
         groupMode === 'none'
-            ? new Set(filteredProducts.map(p => p.productno)).size
+            ? filteredProducts.length
             : activeData.reduce((sum, p: any) => sum + p.count, 0);
 
     const totalPprice = activeData.reduce(
@@ -184,7 +220,7 @@ const router = useRouter();
                     <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                 </div>
             </div>
-              <div className="flex gap-2 p-5 w-full justify-end">
+            <div className="flex gap-2 p-5 w-full justify-end">
                 <button
                     onClick={() => setGroupMode('none')}
                     className="btn btn-sm btn-outline"
@@ -204,6 +240,12 @@ const router = useRouter();
                     className="btn btn-sm btn-outline btn-secondary"
                 >
                     By Customer
+                </button>
+                <button
+                    onClick={() => setGroupMode('note')}
+                    className="btn btn-sm btn-outline btn-accent"
+                >
+                    By Note
                 </button>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
@@ -227,23 +269,7 @@ const router = useRouter();
 
                             </tr>
                         </thead>
-                        {/* <tbody>
-                            {filteredProducts?.map((product, index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{product.date}</td>
-                                    <td>{product.time}</td>
-                                    <td className="uppercase">{product.cid}</td>
-                                    <td className="capitalize">{product.cname}, {product.phoneNumber} {product.address}</td>
-                                    <td className="capitalize">{product.saleNote}</td>
-                                    <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
-                                    <td>{product.productno}</td>
-                                    <td>{product.pprice}</td>
-                                    <td>{product.sprice}</td>
 
-                                </tr>
-                            ))}
-                        </tbody> */}
                         <tbody>
                             {groupMode === 'none' &&
                                 filteredProducts.map((product, index) => (
@@ -310,6 +336,26 @@ const router = useRouter();
                                         <td>{p.totalPprice}</td>
                                         <td>{p.totalSprice}</td>
 
+                                    </tr>
+                                ))}
+                            {groupMode === 'note' &&
+                                groupedByNote.map((p, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+
+                                        <td>—</td>
+                                        <td>—</td>
+                                        <td>—</td>
+
+                                        <td>—</td>
+
+                                        <td>{p.saleNote}</td>
+
+                                        <td>—</td>
+
+                                        <td>{p.count} pcs</td>
+                                        <td>{p.totalPprice}</td>
+                                        <td>{p.totalSprice}</td>
                                     </tr>
                                 ))}
                         </tbody>

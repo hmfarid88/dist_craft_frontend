@@ -17,6 +17,33 @@ const OfficeCost = () => {
   const [paymentNote, setPaymentNote] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [maxDate, setMaxDate] = useState('');
+  const [selectedBank, setSelectedBank] = useState("");
+  const banks = [
+    "AB Bank",
+    "Agrani Bank",
+    "Bank Asia",
+    "BRAC Bank",
+    "City Bank",
+    "Dhaka Bank",
+    "Eastern Bank",
+    "IFIC Bank",
+    "Islami Bank",
+    "Jamuna Bank",
+    "Janata Bank",
+    "Meghna Bank",
+    "Midland Bank",
+    "Mutual Trust Bank",
+    "National Bank",
+    "Premier Bank",
+    "Pubali Bank",
+    "Rupali Bank",
+    "Sonali Bank",
+    "Southeast Bank",
+    "Trust Bank",
+    "UCB Bank",
+    "Uttara Bank"
+  ];
+
   useEffect(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -63,6 +90,10 @@ const OfficeCost = () => {
       toast.warning("Item is empty !");
       return;
     }
+    if (paymentName === "bank" && !selectedBank) {
+        toast.warning("Please select a bank");
+        return;
+      }
     setPending(true);
     try {
       const response = await fetch(`${apiBaseUrl}/payment/paymentRecord`, {
@@ -85,6 +116,8 @@ const OfficeCost = () => {
       setPending(false);
       setPaymentNote("");
       setPaymentAmount("");
+      setPaymentName("");
+      setSelectedBank("");
     }
   };
   const [paymentPersonOption, setPaymentPersonOption] = useState([]);
@@ -120,7 +153,22 @@ const OfficeCost = () => {
               {name.paymentPerson}
             </option>
           ))}
+          <option value="bank">BANK</option>
         </select>
+        {paymentName === "bank" && (
+            <select
+              className='select select-bordered bg-white text-black mt-2'
+              value={paymentName}
+              onChange={(e) => setPaymentName(e.target.value)}
+            >
+              <option value="" disabled>Select Bank</option>
+              {banks.map((bank, index) => (
+                <option key={index} value={bank}>
+                  {bank}
+                </option>
+              ))}
+            </select>
+          )}
       </label>
 
 

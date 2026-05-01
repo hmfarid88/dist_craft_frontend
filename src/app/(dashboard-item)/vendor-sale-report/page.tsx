@@ -40,7 +40,7 @@ const Page = () => {
     const [soldProducts, setSoldProducts] = useState<Product[]>([]);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-    const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer'>('none');
+    const [groupMode, setGroupMode] = useState<'none' | 'product' | 'customer' | 'note'>('none');
 
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/getMonthlyVendorSale?username=${username}`)
@@ -68,13 +68,13 @@ const Page = () => {
                             count: 1,
                             totalSprice: item.sprice,
                             totalPprice: item.pprice,
-                         
+
                         };
                     } else {
                         acc[key].count += 1;
                         acc[key].totalSprice += item.sprice;
                         acc[key].totalPprice += item.pprice;
-                        
+
                     }
 
                     return acc;
@@ -87,7 +87,7 @@ const Page = () => {
                         count: number;
                         totalSprice: number;
                         totalPprice: number;
-                    
+
                     }
                 >)
             )
@@ -103,13 +103,13 @@ const Page = () => {
                         count: 1,
                         totalSprice: item.sprice,
                         totalPprice: item.pprice,
-                      
+
                     };
                 } else {
                     acc[key].count += 1;
                     acc[key].totalSprice += item.sprice;
                     acc[key].totalPprice += item.pprice;
-                 
+
                 }
 
                 return acc;
@@ -117,10 +117,42 @@ const Page = () => {
                 count: number;
                 totalSprice: number;
                 totalPprice: number;
-             
+
             }>)
         )
         : [];
+
+    const groupedByNote =
+        groupMode === 'note'
+            ? Object.values(
+                filteredProducts.reduce((acc, item) => {
+                    const key = item.saleNote || 'No Note';
+
+                    if (!acc[key]) {
+                        acc[key] = {
+                            saleNote: key,
+                            count: 1,
+                            totalSprice: item.sprice,
+                            totalPprice: item.pprice,
+                        };
+                    } else {
+                        acc[key].count += 1;
+                        acc[key].totalSprice += item.sprice;
+                        acc[key].totalPprice += item.pprice;
+                    }
+
+                    return acc;
+                }, {} as Record<
+                    string,
+                    {
+                        saleNote: string;
+                        count: number;
+                        totalSprice: number;
+                        totalPprice: number;
+                    }
+                >)
+            )
+            : [];
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
@@ -145,20 +177,25 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-    
+
     //added for group
     const activeData =
         groupMode === 'product'
             ? groupedProducts
             : groupMode === 'customer'
                 ? groupedByCustomer
-                : filteredProducts;
+                : groupMode === 'note'
+                    ? groupedByNote
+                    : filteredProducts;
 
+    // const totalQty =
+    //     groupMode === 'none'
+    //         ? new Set(filteredProducts.map(p => p.productno)).size
+    //         : activeData.reduce((sum, p: any) => sum + p.count, 0);
     const totalQty =
         groupMode === 'none'
-            ? new Set(filteredProducts.map(p => p.productno)).size
+            ? filteredProducts.length
             : activeData.reduce((sum, p: any) => sum + p.count, 0);
-
     const totalPprice = activeData.reduce(
         (sum, p: any) => sum + (p.totalPprice ?? p.pprice),
         0
@@ -207,6 +244,12 @@ const Page = () => {
                 >
                     By Customer
                 </button>
+                <button
+                    onClick={() => setGroupMode('note')}
+                    className="btn btn-sm btn-outline btn-accent"
+                >
+                    By Note
+                </button>
             </div>
             <div ref={contentToPrint} className="flex flex-col p-2 items-center justify-center">
                 <CompanyInfo />
@@ -228,23 +271,7 @@ const Page = () => {
                                 <th>MRP VALUE</th>
                             </tr>
                         </thead>
-                        {/* <tbody>
-                            {filteredProducts?.map((product, index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{product.date}</td>
-                                    <td>{product.time}</td>
-                                    <td className="uppercase">{product.cid}</td>
-                                    <td className="capitalize">{product.cname} {product.phoneNumber} {product.address}</td>
-                                    <td className="capitalize">{product.saleNote}</td>
-                                    <td className="capitalize">{product.category}, {product.brand}, {product.productName}</td>
-                                    <td>{product.productno}</td>
-                                    <td>{product.pprice}</td>
-                                    <td>{product.sprice}</td>
 
-                                </tr>
-                            ))}
-                        </tbody> */}
                         <tbody>
                             {groupMode === 'none' &&
                                 filteredProducts.map((product, index) => (
@@ -313,8 +340,28 @@ const Page = () => {
 
                                     </tr>
                                 ))}
+                            {groupMode === 'note' &&
+                                groupedByNote.map((p, index) => (
+                                    <tr key={index}>
+                                        <th>{index + 1}</th>
+
+                                        <td>—</td>
+                                        <td>—</td>
+                                        <td>—</td>
+
+                                        <td>—</td>
+
+                                        <td>{p.saleNote}</td>
+
+                                        <td>—</td>
+
+                                        <td>{p.count} pcs</td>
+                                        <td>{p.totalPprice}</td>
+                                        <td>{p.totalSprice}</td>
+                                    </tr>
+                                ))}
                         </tbody>
-                    
+
                         <tfoot>
                             <tr className="font-bold text-sm">
                                 <td colSpan={6}></td>

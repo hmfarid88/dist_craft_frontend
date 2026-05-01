@@ -23,6 +23,33 @@ const RetailerPayment = () => {
   const [date, setDate] = useState("");
   const [maxDate, setMaxDate] = useState('');
 
+  const [selectedBank, setSelectedBank] = useState("");
+
+  const banks = [
+    "AB Bank",
+    "Agrani Bank",
+    "Bank Asia",
+    "BRAC Bank",
+    "City Bank",
+    "Dhaka Bank",
+    "Eastern Bank",
+    "IFIC Bank",
+    "Islami Bank",
+    "Jamuna Bank",
+    "Janata Bank",
+    "Meghna Bank",
+    "Midland Bank",
+    "Mutual Trust Bank",
+    "National Bank",
+    "Premier Bank",
+    "Pubali Bank",
+    "Rupali Bank",
+    "Sonali Bank",
+    "Southeast Bank",
+    "Trust Bank",
+    "UCB Bank",
+    "Uttara Bank"
+  ];
   useEffect(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -50,6 +77,11 @@ const RetailerPayment = () => {
       toast.warning("Item is empty !");
       return;
     }
+    if (paymentType === "bank" && !selectedBank) {
+      toast.warning("Please select a bank");
+      return;
+    }
+    const finalNote = paymentType === "bank" ? selectedBank : retailerNote;
     setPending(true);
     try {
       const response = await fetch(`${apiBaseUrl}/payment/retailerPayment`, {
@@ -57,7 +89,7 @@ const RetailerPayment = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date, username, retailerName, paymentType, note: retailerNote, amount: retailerAmount }),
+        body: JSON.stringify({ date, username, retailerName, paymentType, note: finalNote, amount: retailerAmount }),
       });
 
       if (response.ok) {
@@ -72,6 +104,8 @@ const RetailerPayment = () => {
       setPending(false);
       setRetailerNote("");
       setRetailerAmount("");
+      setPaymentType("");
+      setSelectedBank("");
     }
   };
 
@@ -119,11 +153,36 @@ const RetailerPayment = () => {
           <div className="label">
             <span className="label-text-alt">PAYMENT TYPE</span>
           </div>
-          <select className='select select-bordered bg-white text-black' onChange={(e: any) => { setPaymentType(e.target.value) }}>
+          {/* <select className='select select-bordered bg-white text-black' onChange={(e: any) => { setPaymentType(e.target.value) }}>
             <option selected disabled>Select . . .</option>
             <option value="current">CURRENT</option>
             <option value="previous">PREVIOUS</option>
+            <option value="bank">BANK</option>
+          </select> */}
+          <select
+            className='select select-bordered bg-white text-black'
+            value={paymentType}
+            onChange={(e) => setPaymentType(e.target.value)}
+          >
+            <option value="" disabled>Select . . .</option>
+            <option value="current">CURRENT</option>
+            <option value="previous">PREVIOUS</option>
+            <option value="bank">BANK</option>
           </select>
+          {paymentType === "bank" && (
+            <select
+              className='select select-bordered bg-white text-black mt-2'
+              value={selectedBank}
+              onChange={(e) => setSelectedBank(e.target.value)}
+            >
+              <option value="" disabled>Select Bank</option>
+              {banks.map((bank, index) => (
+                <option key={index} value={bank}>
+                  {bank}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
         <label className="form-control w-full max-w-xs">
           <div className="label">

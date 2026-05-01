@@ -154,6 +154,7 @@ const Page = () => {
                             <option selected disabled>Select . . .</option>
                             <option value="current">CURRENT</option>
                             <option value="previous">PREVIOUS</option>
+                            <option value="bank">BANK</option>
                         </select>
                     </div>
                 </label>
