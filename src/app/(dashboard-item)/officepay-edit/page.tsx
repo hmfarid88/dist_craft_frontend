@@ -26,27 +26,52 @@ const Page = () => {
     const [loading, setLoading] = useState(true);
     const [minDate, setMinDate] = useState('');
     const [maxDate, setMaxDate] = useState('');
+    const [selectedBank, setSelectedBank] = useState("");
+    const banks = [
+        "AB Bank",
+        "Agrani Bank",
+        "Bank Asia",
+        "BRAC Bank",
+        "City Bank",
+        "Dhaka Bank",
+        "Eastern Bank",
+        "IFIC Bank",
+        "Islami Bank",
+        "Jamuna Bank",
+        "Janata Bank",
+        "Meghna Bank",
+        "Midland Bank",
+        "Mutual Trust Bank",
+        "National Bank",
+        "Premier Bank",
+        "Pubali Bank",
+        "Rupali Bank",
+        "Sonali Bank",
+        "Southeast Bank",
+        "Trust Bank",
+        "UCB Bank",
+        "Uttara Bank"
+    ];
 
-   
     useEffect(() => {
-  const today = new Date();
+        const today = new Date();
 
-  // Today (max date)
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const formattedMaxDate = `${year}-${month}-${day}`;
+        // Today (max date)
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedMaxDate = `${year}-${month}-${day}`;
 
-  // First day of last month (min date)
-  const firstDayLastMonth = new Date(year, today.getMonth() - 1, 1);
-  const minYear = firstDayLastMonth.getFullYear();
-  const minMonth = String(firstDayLastMonth.getMonth() + 1).padStart(2, '0');
-  const formattedMinDate = `${minYear}-${minMonth}-01`;
+        // First day of last month (min date)
+        const firstDayLastMonth = new Date(year, today.getMonth() - 1, 1);
+        const minYear = firstDayLastMonth.getFullYear();
+        const minMonth = String(firstDayLastMonth.getMonth() + 1).padStart(2, '0');
+        const formattedMinDate = `${minYear}-${minMonth}-01`;
 
-  setMinDate(formattedMinDate);
-  setMaxDate(formattedMaxDate);
+        setMinDate(formattedMinDate);
+        setMaxDate(formattedMaxDate);
 
-}, []);
+    }, []);
 
 
     useEffect(() => {
@@ -176,7 +201,22 @@ const Page = () => {
                                                             {name.paymentPerson}
                                                         </option>
                                                     ))}
+                                                    <option value="bank">BANK</option>
                                                 </select>
+                                                {editableProduct.paymentName === "bank" && (
+                                                    <select
+                                                        className='select select-bordered bg-white text-black'
+                                                        value={editableProduct.paymentName}
+                                                        onChange={(e) => handleInputChange('paymentName', e.target.value)}
+                                                    >
+                                                        <option value="" disabled>Select Bank</option>
+                                                        {banks.map((bank, index) => (
+                                                            <option key={index} value={bank}>
+                                                                {bank}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

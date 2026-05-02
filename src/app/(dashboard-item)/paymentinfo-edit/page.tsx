@@ -15,6 +15,31 @@ const Page = () => {
     const [pending, setPending] = useState(false);
     const [maxDate, setMaxDate] = useState('');
 
+    const banks = [
+        "AB Bank",
+        "Agrani Bank",
+        "Bank Asia",
+        "BRAC Bank",
+        "City Bank",
+        "Dhaka Bank",
+        "Eastern Bank",
+        "IFIC Bank",
+        "Islami Bank",
+        "Jamuna Bank",
+        "Janata Bank",
+        "Meghna Bank",
+        "Midland Bank",
+        "Mutual Trust Bank",
+        "National Bank",
+        "Premier Bank",
+        "Pubali Bank",
+        "Rupali Bank",
+        "Sonali Bank",
+        "Southeast Bank",
+        "Trust Bank",
+        "UCB Bank",
+        "Uttara Bank"
+    ];
     useEffect(() => {
         const today = new Date();
         const year = today.getFullYear();
@@ -156,7 +181,22 @@ const Page = () => {
                             <option value="previous">PREVIOUS</option>
                             <option value="bank">BANK</option>
                         </select>
-                    </div>
+                        </div>
+                        {paymentType === "bank" && (
+                            <select
+                                className='select select-bordered bg-white text-black mt-2'
+
+                                onChange={(e) => setNote(e.target.value)}
+                            >
+                                <option value="" disabled>Select Bank</option>
+                                {banks.map((bank, index) => (
+                                    <option key={index} value={bank}>
+                                        {bank}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    
                 </label>
 
                 <label className="form-control w-full max-w-xs pt-2">
@@ -195,9 +235,9 @@ const Page = () => {
                                 handleDeleteSubmit(e);
                             }
                         }}
-                  
+
                     >
-                  DELETE 
+                        DELETE
                     </button>
 
                 </label>
