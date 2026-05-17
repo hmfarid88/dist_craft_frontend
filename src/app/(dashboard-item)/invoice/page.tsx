@@ -206,6 +206,7 @@ const Invoice = () => {
                                     <th className='text-left p-0'>PRODUCT</th>
                                     <th>QTY</th>
                                     <th>PRICE</th>
+                                    <th>DISCOUNT</th>
                                     <th className='text-right p-0'>TOTAL</th>
                                 </tr>
                             </thead>
@@ -215,7 +216,8 @@ const Invoice = () => {
                                         <td className='text-left p-0'>{products.brand} {products.productName} {products.color} {products.productno}</td>
                                         <th>1</th>
                                         <td>{products.sprice.toLocaleString('en-IN')}</td>
-                                        <td className='text-right p-0'>{products.sprice.toLocaleString('en-IN')}</td>
+                                        <td>{products.discount.toLocaleString('en-IN')}</td>
+                                        <td className='text-right p-0'>{(products.sprice - products.discount).toLocaleString('en-IN')}</td>
                                     </tr>
                                 ))}
                             </tbody>

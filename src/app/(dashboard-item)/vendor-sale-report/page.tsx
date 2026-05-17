@@ -156,7 +156,6 @@ const Page = () => {
 
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
-
         const filtered = soldProducts.filter(product =>
             searchWords.every(word =>
                 (product.category?.toLowerCase().includes(word) || '') ||
@@ -170,10 +169,10 @@ const Page = () => {
                 (product.productName?.toLowerCase().includes(word) || '')
             )
         );
-
         setFilteredProducts(filtered);
     }, [filterCriteria, soldProducts]);
 
+   
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
