@@ -143,7 +143,7 @@ const Page = () => {
     // }
     return (
         <div className="container-2xl min-h-[calc(100vh-228px)]">
-            <div className="flex justify-between pl-5 pr-5 pt-5">
+            <div className="flex justify-center gap-20 pl-5 pr-5 pt-5">
                 <DateToDate routePath="/datewise-profitreport" />
                 <div className="flex gap-2">
                     <label className="form-control max-w-xs">
@@ -192,6 +192,7 @@ const Page = () => {
                     </label>
                 </div>
             </div>
+           
             <div className="flex justify-between pl-5 pr-5 pt-5">
                 <label className="input input-bordered flex max-w-xs  items-center gap-2">
                     <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -199,6 +200,9 @@ const Page = () => {
                         <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                     </svg>
                 </label>
+                 <div className="flex">
+                <a href="#only_profit" className="btn btn-primary">Only Profit</a>
+            </div>
                 <div className="flex gap-3">
                     <ExcelExportButton tableRef={contentToPrint} fileName="RPDP_Report" />
                     <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
@@ -238,7 +242,7 @@ const Page = () => {
                                     <td>{Number((((product.sprice - product.pprice) * 100) / (product.pprice)).toFixed(2)).toLocaleString('en-IN')} %</td>
                                     <td>{Number((product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((product.qty).toFixed(2)).toLocaleString('en-IN')}</td>
-                                    <td>{Number((((product.sprice - product.pprice) * product.qty)-product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((((product.sprice - product.pprice) * product.qty) - product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -252,7 +256,7 @@ const Page = () => {
                                 <td></td>
                                 <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number((totalProfit-totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit - totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -263,6 +267,24 @@ const Page = () => {
                         <label>PROFIT DEPOSIT : {Number(profitDeposit.toFixed(2)).toLocaleString('en-IN')}</label>
                         <label>PROFIT WITHDRAW : {Number(profitWithdraw.toFixed(2)).toLocaleString('en-IN')}</label>
                         <label>PROFIT REMAINING : {Number((totalProfit + profitDeposit - totalDiscount - totalExpense - profitWithdraw).toFixed(2)).toLocaleString('en-IN')}</label>
+                    </div>
+                </div>
+            </div>
+            <div className="modal sm:modal-middle" role="dialog" id="only_profit">
+                <div className="modal-box">
+                    <div className="flex flex-col w-full">
+                        <div className="divider divider-accent tracking-widest font-bold text-sm p-2">SELECT DATE</div>
+                    </div>
+                    <div className="flex items-center justify-center">
+                       <DateToDate routePath="/datewise-only-profit" />
+                    </div>
+
+                    <div className="modal-action">
+                        <a href="#" className="btn btn-square btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>

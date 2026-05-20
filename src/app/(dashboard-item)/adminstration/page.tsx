@@ -25,14 +25,15 @@ import ExpenseEdit from '@/app/components/ExpenseEdit'
 import OfficePayEdit from '@/app/components/OfficePayEdit'
 import SupplierPayEdit from '@/app/components/SupplierPayEdit'
 import RetailerPayEdit from '@/app/components/RetailerPayEdit'
+import SaleEdit from '@/app/components/SaleEdit'
 
 const Page = () => {
-    
+
     const router = useRouter();
-      useEffect(() => {
+    useEffect(() => {
         const isAdmin = localStorage.getItem("adminAccess");
         if (!isAdmin) {
-            router.replace("/dashboard"); 
+            router.replace("/dashboard");
         }
     }, []);
 
@@ -99,7 +100,7 @@ const Page = () => {
                                     <SmsSetting />
                                 </div>
                             </div>
-                                                  </div>
+                        </div>
                     </div>
 
                     {/* Tab 2: RETURN */}
@@ -131,6 +132,13 @@ const Page = () => {
                                 <div className="collapse-title text-sm font-medium">PRODUCT EDIT</div>
                                 <div className="collapse-content">
                                     <ProductEdit />
+                                </div>
+                            </div>
+                            <div className="collapse collapse-arrow bg-base-200">
+                                <input type="checkbox" className="peer" />
+                                <div className="collapse-title text-sm font-medium">SALE EDIT</div>
+                                <div className="collapse-content">
+                                    <SaleEdit />
                                 </div>
                             </div>
                         </div>
