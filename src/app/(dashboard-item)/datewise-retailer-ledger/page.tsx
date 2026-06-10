@@ -60,8 +60,8 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
-      (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.area.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+      (product.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+      (product.area?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
 
     );
     setFilteredProducts(filtered);
