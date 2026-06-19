@@ -255,8 +255,8 @@ const Page = () => {
                                 <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{Number((totalProfit).toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit).toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number((totalProfit - totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
