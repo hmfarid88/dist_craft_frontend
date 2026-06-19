@@ -155,8 +155,9 @@ const Page = () => {
                                 <th>DP VALUE</th>
                                 <th>UNIT PROFIT</th>
                                 <th>PROFIT (%)</th>
-                                <th>DISCOUNT</th>
                                 <th>QTY</th>
+                                <th>RAW PROFIT</th>
+                                <th>DISCOUNT</th>
                                 <th>PROFIT TOTAL</th>
                             </tr>
                         </thead>
@@ -171,9 +172,10 @@ const Page = () => {
                                     <td>{Number((product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((product.sprice - product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((((product.sprice - product.pprice) * 100) / (product.pprice)).toFixed(2)).toLocaleString('en-IN')} %</td>
-                                    <td>{Number((product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((product.qty).toFixed(2)).toLocaleString('en-IN')}</td>
-                                    <td>{Number((((product.sprice - product.pprice) * product.qty)-product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((((product.sprice - product.pprice) * product.qty)).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((((product.sprice - product.pprice) * product.qty) - product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -185,9 +187,10 @@ const Page = () => {
                                 <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                <td>{Number((totalProfit-totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit).toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit - totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
                         </tfoot>
                     </table>

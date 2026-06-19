@@ -192,7 +192,7 @@ const Page = () => {
                     </label>
                 </div>
             </div>
-           
+
             <div className="flex justify-between pl-5 pr-5 pt-5">
                 <label className="input input-bordered flex max-w-xs  items-center gap-2">
                     <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -200,7 +200,7 @@ const Page = () => {
                         <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                     </svg>
                 </label>
-                
+
                 <div className="flex gap-3">
                     <a href="#only_profit" className="btn btn-primary btn-sm mt-2">Only Profit</a>
                     <ExcelExportButton tableRef={contentToPrint} fileName="RPDP_Report" />
@@ -223,8 +223,9 @@ const Page = () => {
                                 <th>DP VALUE</th>
                                 <th>UNIT PROFIT</th>
                                 <th>PROFIT (%)</th>
-                                <th>DISCOUNT</th>
                                 <th>QTY</th>
+                                <th>RAW PROFIT</th>
+                                <th>DISCOUNT</th>
                                 <th>PROFIT TOTAL</th>
                             </tr>
                         </thead>
@@ -239,8 +240,9 @@ const Page = () => {
                                     <td>{Number((product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((product.sprice - product.pprice).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((((product.sprice - product.pprice) * 100) / (product.pprice)).toFixed(2)).toLocaleString('en-IN')} %</td>
-                                    <td>{Number((product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((product.qty).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((((product.sprice - product.pprice) * product.qty)).toFixed(2)).toLocaleString('en-IN')}</td>
+                                    <td>{Number((product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                     <td>{Number((((product.sprice - product.pprice) * product.qty) - product.discount).toFixed(2)).toLocaleString('en-IN')}</td>
                                 </tr>
                             ))}
@@ -253,8 +255,9 @@ const Page = () => {
                                 <td>{Number(totalPprice.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number((totalProfit).toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                <td>{Number(totalDiscount.toFixed(2)).toLocaleString('en-IN')}</td>
                                 <td>{Number((totalProfit - totalDiscount).toFixed(2)).toLocaleString('en-IN')}</td>
                             </tr>
                         </tfoot>
@@ -275,7 +278,7 @@ const Page = () => {
                         <div className="divider divider-accent tracking-widest font-bold text-sm p-2">SELECT DATE</div>
                     </div>
                     <div className="flex items-center justify-center">
-                       <DateToDate routePath="/datewise-only-profit" />
+                        <DateToDate routePath="/datewise-only-profit" />
                     </div>
 
                     <div className="modal-action">
