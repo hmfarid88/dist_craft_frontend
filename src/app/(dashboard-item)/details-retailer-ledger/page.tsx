@@ -52,7 +52,8 @@ const Page = () => {
         const filtered = allProducts.filter(product =>
             searchWords.every(word =>
                 (product.date?.toLowerCase().includes(word) || '') ||
-                (product.invoice?.toLowerCase().includes(word) || '')
+                (product.invoice?.toLowerCase().includes(word) || '') ||
+                (product.note?.toLowerCase().includes(word) || '')
 
             )
         );

@@ -424,11 +424,28 @@ const Purchase = () => {
   }, [apiBaseUrl, username, colorItem, colorDel]);
 
   const [bulkQty, setBulkQty] = useState(false);
+  const [txt, setTxt] = useState(false);
   const [bulkQuantity, setBulkQuantity] = useState(0);
   const generateProductNo = () => {
     return (Math.floor(100000000000000 + Math.random() * 900000000000000)).toString();
   };
+  const handleTxtChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setTxt(checked);
 
+    if (checked) {
+      setBulkQty(false);
+    }
+  };
+
+  const handleBulkQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setBulkQty(checked);
+
+    if (checked) {
+      setTxt(false);
+    }
+  };
   useEffect(() => {
     if (brand && productName) {
       fetch(`${apiBaseUrl}/api/product/last-entry?username=${encodeURIComponent(username)}&brand=${encodeURIComponent(brand)}&productName=${encodeURIComponent(productName)}`)
@@ -470,10 +487,39 @@ const Purchase = () => {
   //   }
   // }
   const handleSubmit = (e: any) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (bulkQty && bulkQuantity > 0) {
-    const products = Array.from({ length: bulkQuantity }).map(() => ({
+    if (bulkQty && bulkQuantity > 0) {
+      const products = Array.from({ length: bulkQuantity }).map(() => ({
+        id: uid(),
+        username,
+        category,
+        brand,
+        productName,
+        pprice,
+        sprice,
+        color,
+        supplier,
+        supplierInvoice,
+        date,
+        productno: generateProductNo(),
+      }));
+
+      products.forEach((product) => dispatch(addProducts(product)));
+      setBulkQuantity(0);
+
+    } else {
+      submitProduct(productno);
+      setPno("");
+      document.getElementById("pno")?.focus();
+    }
+  };
+
+  const submitProduct = (pno: string) => {
+     if (!category || !brand || !productName || !pprice || !sprice || !color || !supplier || !supplierInvoice || !date) {
+      return;
+    }
+    const product = {
       id: uid(),
       username,
       category,
@@ -485,37 +531,11 @@ const Purchase = () => {
       supplier,
       supplierInvoice,
       date,
-      productno: generateProductNo(),
-    }));
+      productno: pno
+    };
 
-    products.forEach((product) => dispatch(addProducts(product)));
-    setBulkQuantity(0);
-
-  } else {
-    submitProduct(productno);
-    setPno("");
-    document.getElementById("pno")?.focus();
-  }
-};
-
-const submitProduct = (pno: string) => {
-  const product = {
-    id: uid(),
-    username,
-    category,
-    brand,
-    productName,
-    pprice,
-    sprice,
-    color,
-    supplier,
-    supplierInvoice,
-    date,
-    productno: pno
+    dispatch(addProducts(product));
   };
-
-  dispatch(addProducts(product));
-};
   const products = useAppSelector((state) => state.products.products);
   const viewdispatch = useAppDispatch();
   const totalQuantity = useAppSelector(selectTotalQuantity);
@@ -564,12 +584,12 @@ const submitProduct = (pno: string) => {
       setPending(false);
     }
   };
-useEffect(() => {
-  if (productno.length === 15) {
-    submitProduct(productno);
-    setPno("");
-  }
-}, [productno]);
+  useEffect(() => {
+    if (productno.length === 15) {
+      submitProduct(productno);
+      setPno("");
+    }
+  }, [productno]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-center">
       <form onSubmit={handleSubmit}>
@@ -634,13 +654,16 @@ useEffect(() => {
             <div className="label">
               <span className="label-text-alt">PRODUCT ID / QTY</span>
               <div className="flex gap-2">
+                <span className="label-text-alt">TXT</span>
+                <input type="checkbox" className="checkbox checkbox-success w-[20px] h-[20px]" checked={txt}
+                  onChange={handleTxtChange} />
                 <span className="label-text-alt">BULK QTY</span>
                 <input type="checkbox" className="checkbox checkbox-success w-[20px] h-[20px]" checked={bulkQty}
-                  onChange={(e) => setBulkQty(e.target.checked)} />
+                  onChange={handleBulkQtyChange} />
               </div>
             </div>
 
-            {!bulkQty && (
+            {!bulkQty && !txt && (
               // <input type="text" id="pno" maxLength={15} value={productno} name="pno" placeholder="Enter Product ID" onChange={(e: any) => setPno(e.target.value.replace(/\D/g, ""))} className="input input-bordered rounded-md  w-full max-w-xs h-[40px] bg-white text-black" required />
               <input
                 type="text"
@@ -658,7 +681,7 @@ useEffect(() => {
                 }}
                 className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black"
                 autoFocus required
-               />
+              />
             )}
             {bulkQty && (
               <label className="form-control w-full max-w-xs">
@@ -667,6 +690,18 @@ useEffect(() => {
                   name="bulkQuantity"
                   onChange={(e: any) => setBulkQuantity(Number(e.target.value))}
                   placeholder="Enter Quantity" max={1000} value={bulkQuantity}
+                  className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black"
+                  required />
+              </label>
+
+            )}
+            {txt && (
+              <label className="form-control w-full max-w-xs">
+                <input
+                  type="text"
+                  name="productno"
+                  onChange={(e: any) => setPno(e.target.value)}
+                  placeholder="Enter Product ID" max={1000} value={productno}
                   className="input input-bordered rounded-md w-full max-w-xs h-[40px] bg-white text-black"
                   required />
               </label>

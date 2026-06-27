@@ -154,7 +154,6 @@ const Page = () => {
             : [];
     useEffect(() => {
         const searchWords = filterCriteria.toLowerCase().split(" ");
-
         const filtered = soldProducts.filter(product =>
             searchWords.every(word =>
                 (product.category?.toLowerCase().includes(word) || '') ||
