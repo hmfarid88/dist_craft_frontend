@@ -585,7 +585,7 @@ const Purchase = () => {
     }
   };
   useEffect(() => {
-    if (productno.length === 15) {
+    if (!txt &&  productno.length === 15) {
       submitProduct(productno);
       setPno("");
     }
