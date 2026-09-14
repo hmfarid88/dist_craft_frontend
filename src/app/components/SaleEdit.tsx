@@ -15,7 +15,7 @@ const SaleEdit = () => {
             toast.info("Product No Required!")
             return;
         }
-        router.push(`/sale-edit?productno=${productno}`);
+        router.push(`/sale-edit?productno=${encodeURIComponent(productno)}`);
 
     }
 
