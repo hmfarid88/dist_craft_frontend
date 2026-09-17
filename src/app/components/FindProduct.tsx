@@ -12,7 +12,7 @@ const FindProduct = () => {
             toast.warning("Product no is required !");
             return;
         }
-        router.push(`/product-info?productno=${productno}`);
+        router.push(`/product-info?productno=${encodeURIComponent(productno)}`);
         setProductno("");
     }
     return (
