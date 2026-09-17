@@ -45,7 +45,7 @@ const Page = () => {
         content: () => contentToPrint.current,
     });
     useEffect(() => {
-        fetch(`${apiBaseUrl}/api/getProductInfo?username=${username}&productno=${productno}`)
+        fetch(`${apiBaseUrl}/api/getProductInfo?username=${encodeURIComponent(username)}&productno=${encodeURIComponent(productno ?? '')}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
