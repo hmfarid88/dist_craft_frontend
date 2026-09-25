@@ -80,6 +80,7 @@ export const Sidebar = () => {
                                 <li><Link href="/expense-report"> EXPENSE REPORT</Link></li>
                                 <li><Link href="/payment-report"> PAY-RECV REPORT</Link></li>
                                 <li><Link href="/retailer-pay-report"> RETAILER PAYMENT</Link></li>
+                                <li><Link href="/supplier-pay-report"> SUPPLIER PAYMENT</Link></li>
                             </ul>
                         </details>
                     </li>
