@@ -6,6 +6,7 @@ import { createSession } from '../lib/auth';
 import { useAppDispatch } from "@/app/store";
 import { addUser } from "@/app/store/usernameSlice";
 import { uid } from "uid";
+import Image from 'next/image';
 
 const Login = () => {
     const [pending, setPending] = useState(false);
@@ -86,6 +87,44 @@ const Login = () => {
                     <button type='submit' disabled={pending} className="btn bg-gradient-to-r from-cyan-500 to-blue-500 font-bold">{pending ? 'Logging in...' : 'LOGIN'}</button>
                 </div>
             </form>
+            <div className="flex items-end justify-end  mt-2">
+                <a href='#payment_link' className='btn btn-link'>MAKE PAYMENT</a>
+            </div>
+            <div className="modal sm:modal-middle" role="dialog" id="payment_link">
+                <div className="modal-box">
+                    <div className="flex flex-col w-full items-center justify-center p-2">
+
+                        <div className="text-center space-y-3">
+                            <p className="text-lg font-semibold">
+                                PAYMENT WITH
+                            </p>
+
+                            <div className="flex justify-center items-center gap-5">
+                                <Image src="/img/mfs/bkash.png" alt="bKash" height={100} width={100} />
+                                <Image src="/img/mfs/nagad.png" alt="Nagad" height={100} width={100} />
+                                <Image src="/img/mfs/rocket.png" alt="Rocket" height={80} width={80} />
+                                <Image src="/img/mfs/mcash.png" alt="mCash" height={50} width={50} />
+                                <Image src="/img/mfs/upay.png" alt="Upay" height={40} width={40} />
+                            </div>
+
+                            <h4 className="font-semibold text-sm uppercase p-3">
+                                Any other MFS supported by Bangla QR
+                            </h4>
+                        </div>
+                        <div className="flex items-center justify-center">
+                            <Image alt='Payment QR' src='/img/iyadsoft_payment_qr.jpg' width={200} height={200} />
+                        </div>
+
+                    </div>
+                    <div className="modal-action">
+                        <a href="#" className="btn btn-square btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
