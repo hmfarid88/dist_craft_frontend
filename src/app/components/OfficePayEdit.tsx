@@ -41,7 +41,23 @@ const OfficePayEdit = () => {
                     <div className="label">
                         <span className="label-text-alt">SELECT PAYMENT</span>
                     </div>
-                    <Select className="text-black" onChange={(selectedOption: any) => setPaymentno(selectedOption.value)} options={paymentOption} />
+                    <Select className="text-black" onChange={(selectedOption: any) => setPaymentno(selectedOption.value)} options={paymentOption} menuPortalTarget={
+                            typeof document !== "undefined"
+                                ? document.body
+                                : null
+                        }
+                        menuPosition="fixed"
+                        menuPlacement="auto"
+                        styles={{
+                            menuPortal: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                        }} />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <button onClick={handleEdit} className="btn btn-outline btn-success">NEXT</button>

@@ -9,8 +9,8 @@ const RetailerPayEdit = () => {
     const username = uname ? uname.username : 'Guest';
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const router = useRouter();
-    
-    const [paymentno, setPaymentno]=useState();
+
+    const [paymentno, setPaymentno] = useState();
     const [paymentOption, setPaymentOption] = useState([]);
     useEffect(() => {
         fetch(`${apiBaseUrl}/payment/getLast30daysRetailerPayment?username=${username}`)
@@ -35,19 +35,68 @@ const RetailerPayEdit = () => {
 
     }
     return (
+        // <div className="flex min-h-64">
+        //     <div className="flex flex-col gap-3 items-center w-full">
+        //         <label className="form-control w-full max-w-xs">
+        //             <div className="label">
+        //                 <span className="label-text-alt">SELECT PAYMENT</span>
+        //             </div>
+        //             <Select className="text-black" onChange={(selectedOption: any) => setPaymentno(selectedOption.value)} options={paymentOption} />
+        //         </label>
+        //         <label className="form-control w-full max-w-xs">
+        //             <button onClick={handleEdit} className="btn btn-outline btn-success">NEXT</button>
+        //         </label>
+        //     </div>
+
+        // </div>
+
         <div className="flex min-h-64">
             <div className="flex flex-col gap-3 items-center w-full">
+
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text-alt">SELECT PAYMENT</span>
+                        <span className="label-text-alt">
+                            SELECT PAYMENT
+                        </span>
                     </div>
-                    <Select className="text-black" onChange={(selectedOption: any) => setPaymentno(selectedOption.value)} options={paymentOption} />
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <button onClick={handleEdit} className="btn btn-outline btn-success">NEXT</button>
-                </label>
-            </div>
 
+                    <Select
+                        className="text-black"
+                        classNamePrefix="payment-select"
+                        options={paymentOption}
+                        onChange={(selectedOption: any) =>
+                            setPaymentno(selectedOption.value)
+                        }
+                        menuPortalTarget={
+                            typeof document !== "undefined"
+                                ? document.body
+                                : null
+                        }
+                        menuPosition="fixed"
+                        menuPlacement="auto"
+                        styles={{
+                            menuPortal: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                        }}
+                    />
+                </label>
+
+                <label className="form-control w-full max-w-xs">
+                    <button
+                        onClick={handleEdit}
+                        className="btn btn-outline btn-success"
+                    >
+                        NEXT
+                    </button>
+                </label>
+
+            </div>
         </div>
     )
 }

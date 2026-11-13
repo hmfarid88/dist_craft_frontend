@@ -40,7 +40,23 @@ const ExpenseEdit = () => {
                     <div className="label">
                         <span className="label-text-alt">SELECT EXPENSE</span>
                     </div>
-                    <Select className="text-black" onChange={(selectedOption: any) => setExpenseno(selectedOption.value)} options={expenseOption} />
+                    <Select className="text-black" onChange={(selectedOption: any) => setExpenseno(selectedOption.value)} options={expenseOption} menuPortalTarget={
+                            typeof document !== "undefined"
+                                ? document.body
+                                : null
+                        }
+                        menuPosition="fixed"
+                        menuPlacement="auto"
+                        styles={{
+                            menuPortal: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 99999,
+                            }),
+                        }} />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <button onClick={handleEdit} className="btn btn-outline btn-success">NEXT</button>
